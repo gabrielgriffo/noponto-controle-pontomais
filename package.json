@@ -1,0 +1,43 @@
+{
+  "name": "noponto-controle-pontomais",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "author": "Gabriel Griffo",
+  "license": "MIT",
+  "description": "Aplicativo desktop para controle de jornada integrado ao Pontomais: registre horários, monitore progresso e receba notificações inteligentes.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielgriffo/noponto-controle-pontomais.git"
+  },
+  "keywords": [
+    "controle-de-ponto",
+    "pontomais",
+    "jornada-de-trabalho",
+    "desktop-app",
+    "electron"
+  ],
+  "bugs": {
+    "url": "https://github.com/gabrielgriffo/noponto-controle-pontomais/issues"
+  },
+  "homepage": "https://github.com/gabrielgriffo/noponto-controle-pontomais#readme",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
+    "@electron-forge/plugin-fuses": "^7.10.2",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^39.2.0"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}
