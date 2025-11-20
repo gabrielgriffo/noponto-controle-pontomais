@@ -1,9 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require('electron/main')
+const { app, BrowserWindow } = require('electron/main')
 const { createMainWindow } = require('./windows/mainWindow')
+const registerIpcHandlers = require('./ipc')
 
-app.whenReady().then(() => {
+app.setName("No Ponto")
+app.setAppUserModelId("com.gabrielgriffo.noponto")
+
+function bootstrap() {
   // Registrar handlers de IPC
-  ipcMain.handle('ping', () => 'pong')
+  registerIpcHandlers()
 
   // Criar janela principal
   createMainWindow()
@@ -14,7 +18,9 @@ app.whenReady().then(() => {
       createMainWindow()
     }
   })
-})
+}
+
+app.whenReady().then((bootstrap))
 
 // Fechar a aplicação quando todas as janelas forem fechadas (exceto no macOS)
 app.on('window-all-closed', () => {

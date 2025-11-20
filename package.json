@@ -1,5 +1,6 @@
 {
-  "name": "noponto-controle-pontomais",
+  "name": "noponto",
+  "productName": "No Ponto",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {

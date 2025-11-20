@@ -8,3 +8,7 @@ const func = async () => {
 }
 
 func()
+
+document.getElementById("click-test").addEventListener("click", () => {
+  window.versions.openDialog("Testando dialog!!")
+})
