@@ -7,6 +7,14 @@ module.exports = function registerTray(mainWindow) {
   tray.setToolTip('No Ponto')
 
   if (process.platform === 'win32' || process.platform === 'darwin') {
+    tray.on('double-click', () => {
+      if (mainWindow) {
+        if (!mainWindow.isVisible()) mainWindow.show()
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+      }
+    })
+
     tray.on('right-click', () => {
       const mousePosition = screen.getCursorScreenPoint()
       createMenuWindow(mousePosition)
@@ -18,7 +26,6 @@ module.exports = function registerTray(mainWindow) {
     })
   }
 
-  // Handlers IPC para o tray (precisam estar aqui para ter acesso ao mainWindow)
   ipcMain.on('show-window', () => {
     if (mainWindow) {
       mainWindow.show()
