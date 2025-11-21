@@ -28,7 +28,8 @@
   "homepage": "https://github.com/gabrielgriffo/noponto-controle-pontomais#readme",
   "devDependencies": {
     "electron": "^39.2.0",
-    "electron-builder": "26.2.0"
+    "electron-builder": "26.2.0",
+    "prettier": "3.6.2"
   },
   "dependencies": {
     "electron-updater": "6.7.1"
