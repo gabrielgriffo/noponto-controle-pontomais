@@ -29,14 +29,9 @@ function loadState(defaults) {
 function isInsideAnyDisplay(state) {
   const displays = screen.getAllDisplays()
   // Retorna true se a janela estiver dentro de pelo menos um monitor
-  return displays.some(d => {
+  return displays.some((d) => {
     const b = d.bounds
-    return (
-      state.x >= b.x &&
-      state.y >= b.y &&
-      state.x < b.x + b.width &&
-      state.y < b.y + b.height
-    )
+    return state.x >= b.x && state.y >= b.y && state.x < b.x + b.width && state.y < b.y + b.height
   })
 }
 

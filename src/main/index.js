@@ -2,15 +2,15 @@ const { app, BrowserWindow } = require('electron/main')
 const { createMainWindow } = require('./windows/mainWindow')
 const registerIpcHandlers = require('./ipc')
 
-app.setName("No Ponto")
-app.setAppUserModelId("com.gabrielgriffo.noponto")
+app.setName('No Ponto')
+app.setAppUserModelId('com.gabrielgriffo.noponto')
 
 function bootstrap() {
-  // Registrar handlers de IPC
-  registerIpcHandlers()
-
   // Criar janela principal
-  createMainWindow()
+  const mainWindow = createMainWindow()
+
+  // Registrar handlers de IPC
+  registerIpcHandlers(mainWindow)
 
   // No macOS, recriar a janela quando o ícone do dock for clicado
   app.on('activate', () => {
@@ -20,11 +20,8 @@ function bootstrap() {
   })
 }
 
-app.whenReady().then((bootstrap))
+app.whenReady().then(bootstrap)
 
-// Fechar a aplicação quando todas as janelas forem fechadas (exceto no macOS)
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  // This will prevent the app from closing when windows close
 })
