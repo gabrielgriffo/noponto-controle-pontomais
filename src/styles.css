@@ -1,0 +1,128 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Theme Variables */
+:root {
+  --bg-light: #f4f5f4;
+  --bg-white: #fcfcfc;
+  --primary-green: #00be00;
+  --primary-green-light: #00d100;
+  --warning-yellow: #fcd34d;
+  --warning-yellow-light: #ffe693;
+  --border-gray: #e0ddd8;
+  --button-red: #e81123;
+  --opt-disabled: #bdbdbd;
+  --text-dark: #172021e8;
+  --text-placeholder: #d1d5db;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  outline: none;
+}
+
+/* Icons */
+.i {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-settings {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/gear-fill.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/gear-fill.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-foco {
+  width: 18px;
+  height: 18px;
+  background-color: var(--primary-green);
+  mask: url('/assets/icons/icon-foco.ico') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/icon-foco.ico') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-close {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/x-bold.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/x-bold.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-minimize {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/minus-bold.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/minus-bold.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-download {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: url('/assets/icons/import.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/import.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-bell {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: url('/assets/icons/clock-icon.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/clock-icon.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+/* Global Styles */
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter[opsz,wght].ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: var(--bg-white);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
