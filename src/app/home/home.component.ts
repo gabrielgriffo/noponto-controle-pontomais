@@ -57,7 +57,7 @@ export class HomeComponent {
 
   async onCloseClick() {
     const window = await getCurrentWindow();
-    window.destroy();
+    window.close();
   }
 
   async onSettingsClick() {
