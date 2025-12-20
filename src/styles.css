@@ -11,8 +11,10 @@
   --border-gray: #e0ddd8;
   --button-red: #e81123;
   --opt-disabled: #bdbdbd;
-  --text-dark: #172021e8;
+  --text-dark: #31353F;
   --text-placeholder: #d1d5db;
+  --gray-medium: #7C7F82;
+  --gray-placeholder: #C3C4C3;
 }
 
 * {
@@ -44,7 +46,7 @@
 .icon-foco {
   width: 18px;
   height: 18px;
-  background-color: var(--primary-green);
+  background-color: currentColor;
   mask: url('/assets/icons/icon-foco.ico') no-repeat center;
   mask-size: contain;
   -webkit-mask: url('/assets/icons/icon-foco.ico') no-repeat center;

@@ -1,0 +1,96 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Configurações</h2>
+      <button class="close-button" (click)="onClose()">
+        <span class="icon-close"></span>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Importação Automática -->
+      <div class="setting-item">
+        <div class="setting-header">
+          <span class="setting-label">Importação Automática</span>
+          <app-toggle-switch
+            [checked]="settings.autoImportEnabled"
+            (checkedChange)="settings.autoImportEnabled = $event; onToggleChange()"
+          ></app-toggle-switch>
+        </div>
+      </div>
+
+      <!-- Alarme -->
+      <div class="setting-item">
+        <div class="setting-header">
+          <span class="setting-label">Alarme</span>
+          <app-toggle-switch
+            [checked]="settings.alarmEnabled"
+            (checkedChange)="settings.alarmEnabled = $event; onToggleChange()"
+          ></app-toggle-switch>
+        </div>
+      </div>
+
+      <!-- Notificação -->
+      <div class="setting-item">
+        <div class="setting-header">
+          <span class="setting-label">Notificação</span>
+          <app-toggle-switch
+            [checked]="settings.notificationEnabled"
+            (checkedChange)="settings.notificationEnabled = $event; onToggleChange()"
+          ></app-toggle-switch>
+        </div>
+      </div>
+
+      <div class="setting-item" *ngIf="settings.autoImportEnabled">
+        
+        <div class="setting-content" >
+          <label class="input-label">Intervalo</label>
+          <select class="select-input" [(ngModel)]="settings.autoImportInterval" (ngModelChange)="onIntervalChange()">
+            <option *ngFor="let option of intervalOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- PontoMais -->
+      <div class="setting-section">
+        <h3 class="section-title">Credenciais PontoMais</h3>
+
+        <div class="input-group">
+          <label class="input-label">Login/Email</label>
+          <input
+            type="text"
+            class="text-input"
+            placeholder="seu.email@exemplo.com"
+            [(ngModel)]="settings.pontomaisLogin"
+          />
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Senha</label>
+          <input
+            type="password"
+            class="text-input"
+            placeholder="••••••••"
+            [(ngModel)]="settings.pontomaisPassword"
+          />
+        </div>
+
+        <button class="btn-secondary" (click)="onSaveCredentials()">
+          Salvar Credenciais
+        </button>
+      </div>
+
+      <!-- Save Message -->
+      <div class="save-message" *ngIf="saveMessage" [class.success]="saveMessageType === 'success'" [class.error]="saveMessageType === 'error'">
+        {{ saveMessage }}
+      </div>
+    </div>
+  </div>
+</div>

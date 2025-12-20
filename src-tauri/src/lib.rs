@@ -5,6 +5,8 @@ use tauri::{
 };
 use tauri_plugin_window_state::{StateFlags, WindowExt};
 
+mod settings;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -23,6 +25,17 @@ pub fn run() {
 
             // Restaura a última posição
             window.restore_state(StateFlags::POSITION).ok();
+
+            // Configura propriedades da janela
+            window.set_title("No Ponto")?;
+            window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                width: 420,
+                height: 588,
+            }))?;
+            window.set_decorations(false)?;
+            window.set_resizable(false)?;
+            window.set_fullscreen(false)?;
+            window.set_maximizable(false)?;
 
             let open_i = MenuItem::with_id(app, "open", "Exibir Janela", true, None::<&str>)?;
             let quit_i = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
@@ -77,7 +90,11 @@ pub fn run() {
             _ => {}
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            settings::save_settings,
+            settings::load_settings
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

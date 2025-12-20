@@ -1,0 +1,146 @@
+<header class="header">
+  <div class="header-left">
+    <div class="logo-container">
+      <div class="i icon-foco"></div>
+      <span class="logo-text">No Ponto</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-button" (click)="onSettingsClick()">
+      <span class="icon-settings"></span>
+    </button>
+    <button class="icon-button" (click)="onMinimizeClick()">
+      <span class="icon-minimize"></span>
+    </button>
+    <button class="icon-button close" (click)="onCloseClick()">
+      <span class="icon-close"></span>
+    </button>
+  </div>
+</header>
+
+<main class="main-content">
+  <section class="time-actions">
+    <div class="time-inputs">
+
+      <div class="time-entry">
+        <label for="entrada" class="time-label">Entrada</label>
+        <div class="time-input">
+          <div class="form">
+            <input class="input" id="entrada" placeholder="HH:MM" type="text" autocomplete="off"
+              (input)="onTimeInput($event, 'checkIn')" [(ngModel)]="timeEntries.checkIn" />
+          </div>
+        </div>
+      </div>
+      <div class="time-entry">
+        <label for="saida" class="time-label">Saída</label>
+        <div class="time-input">
+          <div class="form">
+            <input class="input" id="saida" placeholder="HH:MM" type="text" autocomplete="off"
+              (input)="onTimeInput($event, 'checkOut')" [(ngModel)]="timeEntries.checkOut" />
+          </div>
+        </div>
+      </div>
+      <div class="time-entry">
+        <label for="entrada2" class="time-label">Entrada</label>
+        <div class="time-input">
+          <div class="form">
+            <input class="input" id="entrada2" placeholder="HH:MM" type="text" autocomplete="off"
+              (input)="onTimeInput($event, 'checkIn2')" [(ngModel)]="timeEntries.checkIn2" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-secondary">
+        Importar
+        <span class="icon-download"></span>
+      </button>
+      <button class="btn-primary">
+        Iniciar Monitoramento
+        <span class="icon-bell"></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="metrics-section">
+    <div class="metrics-line">
+      <div class="metric-focus">
+        <div class="metric-label">Tempo Trabalhado</div>
+        <div class="metric-focus-value">
+          <span [class.gray]="workedTime.hours === 0">{{ workedTime.hours.toString().padStart(2, '0') }}h</span>
+          <span> {{ workedTime.minutes.toString().padStart(2, '0') }}m</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="progress-section">
+    <div class="progress-header">
+      <span class="progress-title">Progresso Total da Jornada</span>
+    </div>
+    <div class="progress-content">
+      <div class="progress-bar">
+        <div class="progress-fill animated"></div>
+      </div>
+      <span class="progress-percentage">78,3%</span>
+    </div>
+  </section>
+
+  <section class="work-periods">
+    <div class="work-periods-title">Períodos de Trabalho</div>
+    <div class="periods-container">
+      <div class="periods-back-bar">
+        <div class="period-item">
+          <div class="period-bar period-ended"></div>
+          <span class="period-label"> 2h 34m </span>
+        </div>
+        <div class="period-item">
+          <div class="period-bar period-green animated"></div>
+          <span class="period-label">5h 21m</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics-section">
+    <div class="metrics-line">
+      <div class="metric-card">
+        <div class="metric-label">Tempo Restante</div>
+        <div class="metric-value">
+          <span [class.gray]="remainingTime.hours === 0">{{ remainingTime.hours.toString().padStart(2, '0') }}h</span>
+          <span> {{ remainingTime.minutes.toString().padStart(2, '0') }}m</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Fim do Expediente</div>
+        <div class="metric-value-ended">18:54</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="status-footer">
+    <div class="status-item">
+      <span class="status-label">Importação Automática</span>
+      <span class="status-value success">10m</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Alarme</span>
+      <span class="status-value success">Ok</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Notificação</span>
+      <span class="status-value disabled">Desativada</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Conexão com PontoMais</span>
+      <span class="status-value success">Ok</span>
+    </div>
+  </section>
+</main>
+
+<!-- Settings Modal -->
+<app-settings-modal
+  [isOpen]="showSettingsModal"
+  (close)="onCloseSettingsModal()"
+></app-settings-modal>
