@@ -37,9 +37,9 @@
 .icon-button {
   background: none;
   border: none;
-  width: 35px;
+  width: 40px;
   height: 100%;
-  cursor: pointer;
+  cursor: default;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,8 +56,15 @@
   color: var(--bg-white);
 }
 
-.icon-button:active {
-  background-color: rgba(0, 0, 0, 0.1);
+.settings{
+  border-radius: 99px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
 }
 
 /* Main Content */

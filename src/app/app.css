@@ -71,7 +71,7 @@ button {
 }
 
 button {
-  cursor: pointer;
+  cursor: default;
 }
 
 button:hover {
