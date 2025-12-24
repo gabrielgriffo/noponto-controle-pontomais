@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToggleSwitch } from '../../components/toggle-switch/toggle-switch';
 import { invoke } from '@tauri-apps/api/core';
+import { ToastService } from '../../services/toast.service';
 
 interface Settings {
   autoImportEnabled: boolean;
@@ -39,8 +40,7 @@ export class SettingsModal implements OnInit {
     { value: 60, label: '1 hora' }
   ];
 
-  saveMessage: string = '';
-  saveMessageType: 'success' | 'error' | '' = '';
+  constructor(private toastService: ToastService) {}
 
   async ngOnInit() {
     await this.loadSettings();
@@ -73,27 +73,16 @@ export class SettingsModal implements OnInit {
 
   async onSaveCredentials() {
     if (!this.settings.pontomaisLogin || !this.settings.pontomaisPassword) {
-      this.saveMessage = 'Preencha login e senha';
-      this.saveMessageType = 'error';
-      setTimeout(() => {
-        this.saveMessage = '';
-        this.saveMessageType = '';
-      }, 3000);
+      this.toastService.error('Preencha login e senha', 90000000);
       return;
     }
 
     try {
       await this.saveSettings();
-      this.saveMessage = 'Credenciais salvas com sucesso!';
-      this.saveMessageType = 'success';
-      setTimeout(() => {
-        this.saveMessage = '';
-        this.saveMessageType = '';
-      }, 3000);
+      this.toastService.success('Credenciais salvas com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar credenciais:', error);
-      this.saveMessage = 'Erro ao salvar credenciais';
-      this.saveMessageType = 'error';
+      this.toastService.error('Erro ao salvar credenciais');
     }
   }
 

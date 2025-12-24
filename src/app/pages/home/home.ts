@@ -31,8 +31,6 @@ export class Home {
     minutes: 0
   };
 
-  currentTime = '12:45:08';
-
   private increasing = true; // Controla se está crescendo ou decrescendo
 
   constructor() {
@@ -126,6 +124,15 @@ export class Home {
     const m = this.remainingTime.minutes.toString().padStart(2, '0');
 
     return `${h}h ${m}m`;
+  }
+
+  get hasTimeData(): boolean {
+    // Verifica se há pelo menos um horário válido no formato HH:MM
+    const hasValidCheckIn = this.timeEntries.checkIn.includes(':');
+    const hasValidCheckOut = this.timeEntries.checkOut.includes(':');
+    const hasValidCheckIn2 = this.timeEntries.checkIn2.includes(':');
+
+    return hasValidCheckIn || hasValidCheckOut || hasValidCheckIn2;
   }
 
   async onMinimizeClick() {

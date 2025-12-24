@@ -63,62 +63,67 @@
     </div>
   </section>
 
-  <section class="metrics-section">
-    <div class="metrics-line">
-      <div class="metric-focus">
-        <div class="metric-label">Tempo Trabalhado</div>
-        <div class="metric-focus-value">
-          <!-- <span [class.gray]="workedTime.hours === 0">{{ workedTime.hours.toString().padStart(2, '0') }}h</span>
-          <span> {{ workedTime.minutes.toString().padStart(2, '0') }}m</span> -->
-          <app-flip-text [text]="workedTimeText" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
+  <div class="metrics-container">
+    <section class="metrics-section">
+      <div class="metrics-line">
+        <div class="metric-focus">
+          <div class="metric-label">Tempo Trabalhado</div>
+          <div class="metric-focus-value">
+            <app-flip-text [text]="workedTimeText" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="progress-section">
-    <div class="progress-header">
-      <span class="progress-title">Progresso Total da Jornada</span>
-    </div>
-    <div class="progress-content">
-      <div class="progress-bar">
-        <div class="progress-fill animated"></div>
+    <section class="progress-section">
+      <div class="progress-header">
+        <span class="progress-title">Progresso Total da Jornada</span>
       </div>
-      <span class="progress-percentage">78,3%</span>
-    </div>
-  </section>
+      <div class="progress-content">
+        <div class="progress-bar">
+          <div class="progress-fill animated"></div>
+        </div>
+        <span class="progress-percentage">78,3%</span>
+      </div>
+    </section>
 
-  <section class="work-periods">
-    <div class="work-periods-title">Períodos de Trabalho</div>
-    <div class="periods-container">
-      <div class="periods-back-bar">
-        <div class="period-item">
-          <div class="period-bar period-ended"></div>
-          <span class="period-label"> 2h 34m </span>
-        </div>
-        <div class="period-item">
-          <div class="period-bar period-green animated"></div>
-          <span class="period-label">5h 21m</span>
+    <section class="work-periods">
+      <div class="work-periods-title">Períodos de Trabalho</div>
+      <div class="periods-container">
+        <div class="periods-back-bar">
+          <div class="period-item">
+            <div class="period-bar period-ended"></div>
+            <span class="period-label"> 2h 34m </span>
+          </div>
+          <div class="period-item">
+            <div class="period-bar period-green animated"></div>
+            <span class="period-label">5h 21m</span>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="metrics-section">
-    <div class="metrics-line">
-      <div class="metric-card">
-        <div class="metric-label">Tempo Restante</div>
-        <div class="metric-value">
-          <!-- Exemplo de uso do flip-text com tamanho menor (18px) -->
-          <app-flip-text [text]="remainingTimeText" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
+    <section class="metrics-section">
+      <div class="metrics-line">
+        <div class="metric-card">
+          <div class="metric-label">Tempo Restante</div>
+          <div class="metric-value">
+            <app-flip-text [text]="remainingTimeText" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Fim do Expediente</div>
+          <div class="metric-value-ended">18:54</div>
         </div>
       </div>
-      <div class="metric-card">
-        <div class="metric-label">Fim do Expediente</div>
-        <div class="metric-value-ended">18:54</div>
+    </section>
+
+    <div class="metrics-empty-state" *ngIf="!hasTimeData">
+      <div class="empty-state-content">
+        <p class="empty-state-text">Insira os horários e <span class="highlight-green">inicie o monitoramento</span> para visualizar suas métricas.</p>
       </div>
     </div>
-  </section>
+  </div>
 
   <section class="status-footer">
     <div class="status-item">
@@ -141,7 +146,4 @@
 </main>
 
 <!-- Settings Modal -->
-<app-settings-modal
-  [isOpen]="showSettingsModal"
-  (close)="onCloseSettingsModal()"
-></app-settings-modal>
+<app-settings-modal [isOpen]="showSettingsModal" (close)="onCloseSettingsModal()"></app-settings-modal>

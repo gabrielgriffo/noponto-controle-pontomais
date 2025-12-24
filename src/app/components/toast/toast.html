@@ -1,0 +1,13 @@
+<div class="toast-container"
+     *ngFor="let toast of toasts; let i = index"
+     [class.exiting]="toast.isExiting"
+     [style.z-index]="getZIndex(i)"
+     [style.bottom.px]="getBottomOffset(i)"
+     [style.opacity]="getOpacity(i)">
+  <div class="toast" [ngClass]="'toast-' + toast.type">
+    <span class="toast-message">{{ toast.message }}</span>
+    <button class="toast-close" (click)="close(toast.id)">
+      <span class="icon-close"></span>
+    </button>
+  </div>
+</div>

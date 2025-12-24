@@ -258,6 +258,14 @@ input:focus {
   filter: brightness(0.85);
 }
 
+/* Metrics Container */
+.metrics-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* Section Grid */
 .metrics-section {
   padding: 0 20px;
@@ -588,4 +596,45 @@ input:focus {
     transform: translate(-40px, -40px) scale(2);
     filter: blur(8px);
   }
+}
+
+/* Metrics Empty State */
+.metrics-empty-state {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 10;
+  margin: 0 20px;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.empty-state-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-medium);
+  margin: 0;
+  max-width: 300px;
+}
+
+.empty-state-text .highlight-green {
+  color: var(--primary-green);
+  font-weight: 600;
 }
