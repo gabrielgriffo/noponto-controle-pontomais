@@ -73,7 +73,7 @@ export class SettingsModal implements OnInit {
 
   async onSaveCredentials() {
     if (!this.settings.pontomaisLogin || !this.settings.pontomaisPassword) {
-      this.toastService.error('Preencha login e senha', 90000000);
+      this.toastService.error('Preencha login e senha', 3000);
       return;
     }
 

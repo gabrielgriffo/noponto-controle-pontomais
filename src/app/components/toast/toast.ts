@@ -19,7 +19,7 @@ export class Toast implements OnInit, OnDestroy {
   toasts: ToastItem[] = [];
   private subscription?: Subscription;
   private nextId: number = 1;
-  private baseZIndex: number = 9999;
+  private baseZIndex: number = 9999999;
   private readonly maxToasts: number = 3;
 
   constructor(private toastService: ToastService) {}
@@ -83,16 +83,20 @@ export class Toast implements OnInit, OnDestroy {
   }
 
   getZIndex(index: number): number {
-    const activeToasts = this.toasts.filter(t => !t.isExiting);
-    const activeIndex = activeToasts.indexOf(this.toasts[index]);
-    return this.baseZIndex + (activeIndex >= 0 ? activeIndex : index);
+    return this.baseZIndex + index;
   }
 
   getBottomOffset(index: number): number {
-    const activeToasts = this.toasts.filter(t => !t.isExiting);
-    const activeIndex = activeToasts.indexOf(this.toasts[index]);
-    if (activeIndex < 0) return 20;
-    return 20 + (activeIndex * 5);
+    const toast = this.toasts[index];
+    if (toast.isExiting) return 20;
+
+    // Conta quantos toasts ativos estão DEPOIS deste no array
+    const toastsAbove = this.toasts
+      .slice(index + 1)
+      .filter(t => !t.isExiting)
+      .length;
+
+    return 20 + (toastsAbove * 10);
   }
 
   getOpacity(index: number): number | undefined {
@@ -103,13 +107,29 @@ export class Toast implements OnInit, OnDestroy {
       return undefined;
     }
 
-    const activeToasts = this.toasts.filter(t => !t.isExiting);
-    const activeIndex = activeToasts.indexOf(toast);
+    const toastsAbove = this.toasts
+      .slice(index + 1)
+      .filter(t => !t.isExiting)
+      .length;
 
-    if (activeIndex < 0) return 1;
-
-    const toastsAbove = activeToasts.length - 1 - activeIndex;
     const opacity = 1 - (toastsAbove * 0.25);
     return Math.max(0.5, opacity);
+  }
+
+  getScale(index: number): number | undefined {
+    const toast = this.toasts[index];
+
+    // Deixa animação CSS controlar scale ao sair
+    if (toast.isExiting) {
+      return undefined;
+    }
+
+    const toastsAbove = this.toasts
+      .slice(index + 1)
+      .filter(t => !t.isExiting)
+      .length;
+
+    const scale = 1 - (toastsAbove * 0.05);
+    return Math.max(0.5, scale);
   }
 }

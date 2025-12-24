@@ -4,7 +4,8 @@
      [style.z-index]="getZIndex(i)"
      [style.bottom.px]="getBottomOffset(i)"
      [style.opacity]="getOpacity(i)">
-  <div class="toast" [ngClass]="'toast-' + toast.type">
+  <div class="toast" [ngClass]="'toast-' + toast.type"
+       [style.scale]="getScale(i)">
     <span class="toast-message">{{ toast.message }}</span>
     <button class="toast-close" (click)="close(toast.id)">
       <span class="icon-close"></span>
