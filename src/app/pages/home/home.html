@@ -68,8 +68,9 @@
       <div class="metric-focus">
         <div class="metric-label">Tempo Trabalhado</div>
         <div class="metric-focus-value">
-          <span [class.gray]="workedTime.hours === 0">{{ workedTime.hours.toString().padStart(2, '0') }}h</span>
-          <span> {{ workedTime.minutes.toString().padStart(2, '0') }}m</span>
+          <!-- <span [class.gray]="workedTime.hours === 0">{{ workedTime.hours.toString().padStart(2, '0') }}h</span>
+          <span> {{ workedTime.minutes.toString().padStart(2, '0') }}m</span> -->
+          <app-flip-text [text]="workedTimeText" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
         </div>
       </div>
     </div>
@@ -108,8 +109,8 @@
       <div class="metric-card">
         <div class="metric-label">Tempo Restante</div>
         <div class="metric-value">
-          <span [class.gray]="remainingTime.hours === 0">{{ remainingTime.hours.toString().padStart(2, '0') }}h</span>
-          <span> {{ remainingTime.minutes.toString().padStart(2, '0') }}m</span>
+          <!-- Exemplo de uso do flip-text com tamanho menor (18px) -->
+          <app-flip-text [text]="remainingTimeText" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
         </div>
       </div>
       <div class="metric-card">

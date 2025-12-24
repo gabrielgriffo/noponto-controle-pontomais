@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { SettingsModal } from '../components/settings-modal/settings-modal';
+import { SettingsModal } from '../settings-modal/settings-modal';
+import { FlipText } from '../../components/flip-text/flip-text';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, SettingsModal],
+  imports: [CommonModule, FormsModule, SettingsModal, FlipText],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -30,18 +31,20 @@ export class Home {
     minutes: 0
   };
 
+  currentTime = '12:45:08';
+
   private increasing = true; // Controla se está crescendo ou decrescendo
 
   constructor() {
-    // this.startTimeSimulation();
+    this.startTimeSimulation();
   }
 
   startTimeSimulation(): void {
     setInterval(() => {
       if (this.increasing) {
         // Adiciona 10 minutos
-        this.workedTime.minutes += 10;
-        this.remainingTime.minutes += 10;
+        this.workedTime.minutes += 1;
+        this.remainingTime.minutes += 1;
 
         // Converte minutos em horas se necessário
         if (this.workedTime.minutes >= 60) {
@@ -58,9 +61,9 @@ export class Home {
           this.increasing = false;
         }
       } else {
-        // Subtrai 10 minutos
-        this.workedTime.minutes -= 10;
-        this.remainingTime.minutes -= 10;
+        // Subtrai 1 minutos
+        this.workedTime.minutes -= 1;
+        this.remainingTime.minutes -= 1;
 
         // Converte horas em minutos se necessário
         if (this.workedTime.minutes < 0) {
@@ -109,6 +112,20 @@ export class Home {
     } else {
       this.timeEntries[field] = value.slice(0, 2) + ':' + value.slice(2, 4);
     }
+  }
+
+  get workedTimeText(): string {
+    const h = this.workedTime.hours.toString().padStart(2, '0');
+    const m = this.workedTime.minutes.toString().padStart(2, '0');
+
+    return `${h}h ${m}m`;
+  }
+
+  get remainingTimeText(): string {
+    const h = this.remainingTime.hours.toString().padStart(2, '0');
+    const m = this.remainingTime.minutes.toString().padStart(2, '0');
+
+    return `${h}h ${m}m`;
   }
 
   async onMinimizeClick() {

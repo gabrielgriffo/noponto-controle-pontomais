@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ToggleSwitch } from '../toggle-switch/toggle-switch';
+import { ToggleSwitch } from '../../components/toggle-switch/toggle-switch';
 import { invoke } from '@tauri-apps/api/core';
 
 interface Settings {

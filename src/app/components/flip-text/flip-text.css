@@ -1,0 +1,82 @@
+/* Componente wrapper */
+app-flip-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container principal do flip text */
+app-flip-text .flip-container {
+  display: inline-flex;
+  position: relative;
+  /* Altura será definida dinamicamente via JavaScript baseada no fontSize */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cada palavra (conjunto de letras) */
+app-flip-text .word {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  display: flex;
+}
+
+/* Palavra que está saindo */
+app-flip-text .word.exit {
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Letras da palavra que está saindo */
+app-flip-text .word.exit .letter {
+  animation: flip-letter-out 0.3s cubic-bezier(0.6, 0, 0.4, 1) forwards !important;
+}
+
+/* Cada letra */
+app-flip-text .letter {
+  display: inline-block;
+  opacity: 0;
+  /* Valores de transform e blur serão definidos via variáveis CSS customizadas */
+  transform: translateY(var(--translate-y-in, 20px));
+  filter: blur(var(--blur-in, 10px));
+  animation: flip-letter-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Cor cinza para "00h" */
+app-flip-text .gray {
+  color: var(--border-gray);
+}
+
+/* Animação de entrada das letras */
+@keyframes flip-letter-in {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--translate-y-in, 20px));
+    filter: blur(var(--blur-in, 10px));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Animação de saída das letras */
+@keyframes flip-letter-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  50% {
+    opacity: 0.1;
+    transform: translateY(calc(var(--translate-y-out, 30px) * -0.33)) scale(1.1);
+    filter: blur(calc(var(--blur-out, 12px) * 0.5));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--translate-y-out, 30px) * -1)) scale(1.3);
+    filter: blur(var(--blur-out, 12px));
+  }
+}

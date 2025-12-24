@@ -16,7 +16,14 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}))
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // Quando uma segunda instância é detectada, foca a janela existente
+            if let Some(window) = app.get_webview_window("main") {
+                window.unminimize().ok();
+                window.show().ok();
+                window.set_focus().ok();
+            }
+        }))
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .setup(|app| {
             let window = app
