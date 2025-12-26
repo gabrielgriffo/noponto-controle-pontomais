@@ -25,7 +25,7 @@
 
 /* Modal Container */
 .modal-container {
-  background-color: var(--bg-white);
+  background-color: var(--bg-light);
   border-radius: 8px;
   max-width: 420px;
   max-height: 588px;
@@ -75,7 +75,7 @@
 }
 
 .close-button:hover {
-  background-color: var(--bg-light);
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 /* Body */
@@ -167,29 +167,6 @@
   height: 38px;
 }
 
-.btn-secondary {
-  background-color: var(--border-gray);
-  color: var(--text-dark);
+.btn-secondary{
   margin-top: 8px;
-}
-
-.btn-secondary:hover {
-  filter: brightness(0.95);
-}
-
-.btn-secondary:active {
-  filter: brightness(0.9);
-}
-
-.btn-primary {
-  background-color: var(--primary-green);
-  color: white;
-}
-
-.btn-primary:hover {
-  filter: brightness(0.9);
-}
-
-.btn-primary:active {
-  filter: brightness(0.85);
 }

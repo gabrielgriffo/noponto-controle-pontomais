@@ -9,6 +9,7 @@
   --warning-yellow: #fcd34d;
   --warning-yellow-light: #ffe693;
   --border-gray: #e0ddd8;
+  --border-gray-light: #eff1f3;
   --button-red: #e81123;
   --opt-disabled: #bdbdbd;
   --text-dark: #31353F;
@@ -34,12 +35,12 @@
 }
 
 .icon-settings {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   background-color: currentColor;
-  mask: url('/assets/icons/gear-fill.svg') no-repeat center;
+  mask: url('/assets/icons/gear.svg') no-repeat center;
   mask-size: contain;
-  -webkit-mask: url('/assets/icons/gear-fill.svg') no-repeat center;
+  -webkit-mask: url('/assets/icons/gear.svg') no-repeat center;
   -webkit-mask-size: contain;
 }
 
@@ -159,4 +160,30 @@ button{
 .btn-primary:active, .btn-secondary:active {
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.9);
+}
+
+.btn-primary:active {
+  filter: brightness(0.85);
+}
+
+.btn-secondary {
+  background-color: var(--border-gray-light);
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  filter: brightness(0.95);
+}
+
+.btn-secondary:active {
+  filter: brightness(0.9);
 }

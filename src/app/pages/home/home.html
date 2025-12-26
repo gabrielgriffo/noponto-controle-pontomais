@@ -1,27 +1,37 @@
+<!-- Cabeçalho da aplicação -->
 <header class="header">
+  <!-- Logo e branding -->
   <div class="header-left">
     <div class="logo-container">
       <div class="i icon-foco"></div>
       <span class="logo-text">No Ponto</span>
     </div>
   </div>
+  <!-- Botões de controle da janela -->
   <div class="header-right">
+    <!-- Botão de configurações -->
     <button class="icon-button settings" (click)="onSettingsClick()">
       <span class="icon-settings"></span>
     </button>
+    <!-- Botão minimizar -->
     <button class="icon-button" (click)="onMinimizeClick()">
       <span class="icon-minimize"></span>
     </button>
+    <!-- Botão fechar -->
     <button class="icon-button close" (click)="onCloseClick()">
       <span class="icon-close"></span>
     </button>
   </div>
 </header>
 
+<!-- Conteúdo principal -->
 <main class="main-content">
+  <!-- Seção de entrada de horários e ações -->
   <section class="time-actions">
+    <!-- Inputs de horário -->
     <div class="time-inputs">
 
+      <!-- Primeira Entrada -->
       <div class="time-entry">
         <label for="checkIn" class="time-label">Entrada</label>
         <div class="time-input">
@@ -31,6 +41,7 @@
           </div>
         </div>
       </div>
+      <!-- Primeira Saída -->
       <div class="time-entry">
         <label for="checkOut" class="time-label">Saída</label>
         <div class="time-input">
@@ -40,6 +51,7 @@
           </div>
         </div>
       </div>
+      <!-- Segunda Entrada -->
       <div class="time-entry">
         <label for="checkIn2" class="time-label">Entrada</label>
         <div class="time-input">
@@ -51,11 +63,14 @@
       </div>
     </div>
 
+    <!-- Botões de ação -->
     <div class="action-buttons">
+      <!-- Botão de importar horários -->
       <button class="btn-secondary" (click)="onImportClick()">
         Importar
         <span class="icon-download"></span>
       </button>
+      <!-- Botão de iniciar monitoramento -->
       <button class="btn-primary" (click)="onStartMonitoringClick()">
         Iniciar Monitoramento
         <span class="icon-bell"></span>
@@ -63,7 +78,9 @@
     </div>
   </section>
 
+  <!-- Container de métricas -->
   <div class="metrics-container">
+    <!-- Métrica principal: Tempo Trabalhado -->
     <section class="metrics-section">
       <div class="metrics-line">
         <div class="metric-focus">
@@ -75,6 +92,7 @@
       </div>
     </section>
 
+    <!-- Barra de progresso da jornada -->
     <section class="progress-section">
       <div class="progress-header">
         <span class="progress-title">Progresso Total da Jornada</span>
@@ -87,14 +105,17 @@
       </div>
     </section>
 
+    <!-- Visualização dos períodos de trabalho -->
     <section class="work-periods">
       <div class="work-periods-title">Períodos de Trabalho</div>
       <div class="periods-container">
         <div class="periods-back-bar">
+          <!-- Primeiro período (entrada até saída) -->
           <div class="period-item" [style.width.%]="firstPeriodPercentage" *ngIf="isMonitoring && hasFirstPeriod">
             <div class="period-bar" [ngClass]="hasSecondPeriod ? 'period-ended' : 'period-green animated'"></div>
             <span class="period-label">{{ firstPeriodTime | timeFormat:'duration' }}</span>
           </div>
+          <!-- Segundo período (retorno até agora/fim) -->
           <div class="period-item" [style.width.%]="secondPeriodPercentage" *ngIf="isMonitoring && hasSecondPeriod">
             <div class="period-bar period-green animated"></div>
             <span class="period-label">{{ secondPeriodTime | timeFormat:'duration' }}</span>
@@ -103,14 +124,17 @@
       </div>
     </section>
 
+    <!-- Métricas complementares -->
     <section class="metrics-section">
       <div class="metrics-line">
+        <!-- Cartão: Tempo Restante -->
         <div class="metric-card">
           <div class="metric-label">Tempo Restante</div>
           <div class="metric-value">
             <app-flip-text [text]="remainingTime | timeFormat:'duration'" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
           </div>
         </div>
+        <!-- Cartão: Fim do Expediente -->
         <div class="metric-card">
           <div class="metric-label">Fim do Expediente</div>
           <div class="metric-value-ended">{{ endTime | timeFormat:'clock' }}</div>
@@ -118,6 +142,7 @@
       </div>
     </section>
 
+    <!-- Estado vazio (quando não está monitorando) -->
     <div class="metrics-empty-state" *ngIf="!isMonitoring">
       <div class="empty-state-content">
         <p class="empty-state-text">Insira os horários e <span class="highlight-green">inicie o monitoramento</span> para visualizar suas métricas.</p>
@@ -125,19 +150,24 @@
     </div>
   </div>
 
+  <!-- Rodapé com status do sistema -->
   <section class="status-footer">
+    <!-- Status: Importação Automática -->
     <div class="status-item">
       <span class="status-label">Importação Automática</span>
       <span class="status-value success">10m</span>
     </div>
+    <!-- Status: Alarme -->
     <div class="status-item">
       <span class="status-label">Alarme</span>
       <span class="status-value success">Ok</span>
     </div>
+    <!-- Status: Notificação -->
     <div class="status-item">
       <span class="status-label">Notificação</span>
       <span class="status-value disabled">Desativada</span>
     </div>
+    <!-- Status: Conexão com PontoMais -->
     <div class="status-item">
       <span class="status-label">Conexão com PontoMais</span>
       <span class="status-value success">Ok</span>
@@ -145,5 +175,5 @@
   </section>
 </main>
 
-<!-- Settings Modal -->
+<!-- Modal de Configurações -->
 <app-settings-modal [isOpen]="showSettingsModal" (close)="onCloseSettingsModal()"></app-settings-modal>
