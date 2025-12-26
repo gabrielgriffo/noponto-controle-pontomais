@@ -70,10 +70,6 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--gray-medium);
   transition: background-color 0.2s;
 }
@@ -168,18 +164,6 @@
 .btn-secondary,
 .btn-primary {
   width: 100%;
-  padding: 0 12px;
-  border: none;
-  border-radius: 99px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  transition: filter 0.2s;
   height: 38px;
 }
 
@@ -204,7 +188,6 @@
 
 .btn-primary:hover {
   filter: brightness(0.9);
-  cursor: default;
 }
 
 .btn-primary:active {

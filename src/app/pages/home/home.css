@@ -36,13 +36,9 @@
 
 .icon-button {
   background: none;
-  border: none;
   width: 40px;
   height: 100%;
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0;
   -webkit-app-region: no-drag;
   color: var(--bg-white);
 }
@@ -151,6 +147,8 @@
   border-radius: var(--border-radius);
   transition: border-radius 0.3s ease;
   background: var(--bg-white);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* styling of Input */
@@ -214,18 +212,6 @@ input:focus {
 .btn-secondary,
 .btn-primary {
   flex: 1;
-  padding: 0 12px;
-  border: none;
-  border-radius: 99px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  transition: filter 0.2s;
   height: 35px;
 }
 
@@ -237,7 +223,6 @@ input:focus {
 
 .btn-secondary:hover {
   filter: brightness(0.95);
-  cursor: default;
 }
 
 .btn-secondary:active {
@@ -251,7 +236,6 @@ input:focus {
 
 .btn-primary:hover {
   filter: brightness(0.9);
-  cursor: default;
 }
 
 .btn-primary:active {
@@ -300,6 +284,7 @@ input:focus {
 }
 
 .metric-card {
+  background: linear-gradient(-60deg,rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0) 100%);
   background-color: var(--bg-light);
   border-radius: 15px;
   padding: 12px 8px;

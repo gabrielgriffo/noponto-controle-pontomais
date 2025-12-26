@@ -36,7 +36,7 @@
 .toast {
   background-color: var(--bg-white);
   border-radius: 8px;
-  padding: 6px 8px;
+  padding: 8px 10px;
   min-width: 320px;
   max-width: 400px;
   display: flex;
@@ -61,14 +61,10 @@
 /* Toast Close Button */
 .toast-close {
   background: none;
-  border: none;
   width: 24px;
   height: 24px;
+  padding: 0;
   border-radius: 50%;
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--gray-medium);
   transition: background-color 0.2s;
   flex-shrink: 0;
