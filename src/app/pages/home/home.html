@@ -23,40 +23,40 @@
     <div class="time-inputs">
 
       <div class="time-entry">
-        <label for="entrada" class="time-label">Entrada</label>
+        <label for="checkIn" class="time-label">Entrada</label>
         <div class="time-input">
           <div class="form">
-            <input class="input" id="entrada" placeholder="HH:MM" type="text" autocomplete="off"
-              (input)="onTimeInput($event, 'checkIn')" [(ngModel)]="timeEntries.checkIn" />
+            <input class="input" id="checkIn" placeholder="HH:MM" type="text" autocomplete="off"
+              maxlength="5" (input)="onTimeInput('checkIn')" /> 
           </div>
         </div>
       </div>
       <div class="time-entry">
-        <label for="saida" class="time-label">Saída</label>
+        <label for="checkOut" class="time-label">Saída</label>
         <div class="time-input">
           <div class="form">
-            <input class="input" id="saida" placeholder="HH:MM" type="text" autocomplete="off"
-              (input)="onTimeInput($event, 'checkOut')" [(ngModel)]="timeEntries.checkOut" />
+            <input class="input" id="checkOut" placeholder="HH:MM" type="text" autocomplete="off"
+              maxlength="5" (input)="onTimeInput('checkOut')" />
           </div>
         </div>
       </div>
       <div class="time-entry">
-        <label for="entrada2" class="time-label">Entrada</label>
+        <label for="checkIn2" class="time-label">Entrada</label>
         <div class="time-input">
           <div class="form">
-            <input class="input" id="entrada2" placeholder="HH:MM" type="text" autocomplete="off"
-              (input)="onTimeInput($event, 'checkIn2')" [(ngModel)]="timeEntries.checkIn2" />
+            <input class="input" id="checkIn2" placeholder="HH:MM" type="text" autocomplete="off"
+              maxlength="5" (input)="onTimeInput('checkIn2')" />
           </div>
         </div>
       </div>
     </div>
 
     <div class="action-buttons">
-      <button class="btn-secondary">
+      <button class="btn-secondary" (click)="onImportClick()">
         Importar
         <span class="icon-download"></span>
       </button>
-      <button class="btn-primary">
+      <button class="btn-primary" (click)="onStartMonitoringClick()">
         Iniciar Monitoramento
         <span class="icon-bell"></span>
       </button>
@@ -69,7 +69,7 @@
         <div class="metric-focus">
           <div class="metric-label">Tempo Trabalhado</div>
           <div class="metric-focus-value">
-            <app-flip-text [text]="workedTimeText" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
+            <app-flip-text [text]="workedTime | timeFormat:'duration'" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
           </div>
         </div>
       </div>
@@ -81,9 +81,9 @@
       </div>
       <div class="progress-content">
         <div class="progress-bar">
-          <div class="progress-fill animated"></div>
+          <div class="progress-fill animated" [style.width.%]="progressPercentageValue"></div>
         </div>
-        <span class="progress-percentage">78,3%</span>
+        <span class="progress-percentage">{{ progressPercentageValue.toFixed(1).replace('.', ',') }}%</span>
       </div>
     </section>
 
@@ -93,11 +93,11 @@
         <div class="periods-back-bar">
           <div class="period-item">
             <div class="period-bar period-ended"></div>
-            <span class="period-label"> 2h 34m </span>
+            <span class="period-label">{{ firstPeriodTime | timeFormat:'duration' }}</span>
           </div>
           <div class="period-item">
             <div class="period-bar period-green animated"></div>
-            <span class="period-label">5h 21m</span>
+            <span class="period-label">{{ secondPeriodTime | timeFormat:'duration' }}</span>
           </div>
         </div>
       </div>
@@ -108,12 +108,12 @@
         <div class="metric-card">
           <div class="metric-label">Tempo Restante</div>
           <div class="metric-value">
-            <app-flip-text [text]="remainingTimeText" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
+            <app-flip-text [text]="remainingTime | timeFormat:'duration'" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
           </div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Fim do Expediente</div>
-          <div class="metric-value-ended">18:54</div>
+          <div class="metric-value-ended">{{ endTime | timeFormat:'clock' }}</div>
         </div>
       </div>
     </section>

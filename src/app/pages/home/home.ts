@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { SettingsModal } from '../settings-modal/settings-modal';
 import { FlipText } from '../../components/flip-text/flip-text';
+import { TimeFormatPipe } from '../../pipes/time-format.pipe';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, SettingsModal, FlipText],
+  imports: [CommonModule, FormsModule, SettingsModal, FlipText, TimeFormatPipe],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -21,17 +22,36 @@ export class Home {
 
   // Tempo Trabalhado
   workedTime = {
-    hours: 0,
-    minutes: 0
+    hours: 7,
+    minutes: 50
   };
 
   // Tempo Restante
   remainingTime = {
-    hours: 0,
-    minutes: 0
+    hours: 7,
+    minutes: 50
+  };
+
+  // Primeiro período de trabalho
+  firstPeriodTime = {
+    hours: 2,
+    minutes: 34
+  };
+
+  // Segundo período de trabalho
+  secondPeriodTime = {
+    hours: 5,
+    minutes: 21
+  };
+
+  // Horário de fim do expediente
+  endTime = {
+    hours: 18,
+    minutes: 54
   };
 
   private increasing = true; // Controla se está crescendo ou decrescendo
+  hasTimeData: boolean = true;
 
   constructor() {
     this.startTimeSimulation();
@@ -78,13 +98,13 @@ export class Home {
           this.increasing = true;
         }
       }
-    }, 1000); // Executa a cada 1 segundo
+    }, 1000);
   }
 
-  onTimeInput(event: Event, field: keyof typeof this.timeEntries): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
-
+  onTimeInput(field: keyof typeof this.timeEntries): void {
+    const inputElement = document.getElementById(field) as HTMLInputElement
+    let value = inputElement.value.replace(/[^0-9]/g, '');
+    
     // Se digitou um único dígito >= 3 nas horas, adiciona 0 antes
     if (value.length === 1 && parseInt(value) >= 3) {
       value = '0' + value;
@@ -104,36 +124,34 @@ export class Home {
     }
 
     if (value.length === 0) {
-      this.timeEntries[field] = '';
+      inputElement.value = '';
     } else if (value.length <= 2) {
-      this.timeEntries[field] = value;
+      inputElement.value = value;
     } else {
-      this.timeEntries[field] = value.slice(0, 2) + ':' + value.slice(2, 4);
+      inputElement.value = value.slice(0, 2) + ':' + value.slice(2, 4);
     }
+    
+    this.timeEntries[field] = inputElement.value;
   }
 
-  get workedTimeText(): string {
-    const h = this.workedTime.hours.toString().padStart(2, '0');
-    const m = this.workedTime.minutes.toString().padStart(2, '0');
+  get progressPercentageValue(): number {
+    // Calcula o percentual baseado em uma jornada de 8 horas (480 minutos)
+    const totalWorkMinutes = (this.workedTime.hours * 60) + this.workedTime.minutes;
+    const totalJourneyMinutes = 8 * 60; // 480 minutos
+    const percentage = (totalWorkMinutes / totalJourneyMinutes) * 100;
 
-    return `${h}h ${m}m`;
+    return Math.min(percentage, 100); // Limita a 100%
   }
 
-  get remainingTimeText(): string {
-    const h = this.remainingTime.hours.toString().padStart(2, '0');
-    const m = this.remainingTime.minutes.toString().padStart(2, '0');
-
-    return `${h}h ${m}m`;
-  }
-
-  get hasTimeData(): boolean {
-    // Verifica se há pelo menos um horário válido no formato HH:MM
-    const hasValidCheckIn = this.timeEntries.checkIn.includes(':');
-    const hasValidCheckOut = this.timeEntries.checkOut.includes(':');
-    const hasValidCheckIn2 = this.timeEntries.checkIn2.includes(':');
-
-    return hasValidCheckIn || hasValidCheckOut || hasValidCheckIn2;
-  }
+  // get hasTimeData(): boolean {
+  //   // Verifica se há pelo menos um horário válido no formato HH:MM
+  //   const hasValidCheckIn = this.timeEntries.checkIn.includes(':');
+  //   const hasValidCheckOut = this.timeEntries.checkOut.includes(':');
+  //   const hasValidCheckIn2 = this.timeEntries.checkIn2.includes(':');
+    
+  //   // return true;
+  //   return hasValidCheckIn || hasValidCheckOut || hasValidCheckIn2;
+  // }
 
   async onMinimizeClick() {
     const window = await getCurrentWindow();
@@ -143,6 +161,17 @@ export class Home {
   async onCloseClick() {
     const window = await getCurrentWindow();
     window.close();
+  }
+
+  onStartMonitoringClick(){
+    // this.timeEntries.checkIn
+    // console.log(this.timeEntries.checkIn);
+    
+    // this.workedTime.hours
+  }
+
+  onImportClick(){
+    this.hasTimeData = !this.hasTimeData;
   }
 
   onSettingsClick() {
