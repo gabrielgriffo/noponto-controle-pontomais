@@ -33,6 +33,11 @@ pub fn run() {
             // Restaura a última posição
             window.restore_state(StateFlags::POSITION).ok();
 
+            // Garante que a janela sempre apareça ao iniciar, independente do último estado
+            window.unminimize().ok();
+            window.show().ok();
+            window.set_focus().ok();
+
             // Configura propriedades da janela
             window.set_title("No Ponto")?;
             window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
