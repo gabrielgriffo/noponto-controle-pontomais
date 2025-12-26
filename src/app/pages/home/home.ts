@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { SettingsModal } from '../settings-modal/settings-modal';
 import { FlipText } from '../../components/flip-text/flip-text';
 import { TimeFormatPipe } from '../../pipes/time-format.pipe';
@@ -11,19 +10,17 @@ import { TimeObject } from '../../models/time-object';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, SettingsModal, FlipText, TimeFormatPipe, TimeInputDirective],
+  imports: [CommonModule, SettingsModal, FlipText, TimeFormatPipe, TimeInputDirective],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home {
+export class Home implements OnDestroy {
   showSettingsModal = false;
-  hasTimeData = false;
+  isMonitoring = false;
 
-  timeEntries = {
-    checkIn: '',
-    checkOut: '',
-    checkIn2: ''
-  };
+  @ViewChild('checkInInput') checkInInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('checkOutInput') checkOutInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('checkIn2Input') checkIn2Input!: ElementRef<HTMLInputElement>;
 
   workedTime: TimeObject = { hours: 0, minutes: 0 };
   remainingTime: TimeObject = { hours: 0, minutes: 0 };
@@ -31,21 +28,19 @@ export class Home {
   secondPeriodTime: TimeObject = { hours: 0, minutes: 0 };
   endTime: TimeObject = { hours: 0, minutes: 0 };
 
-  private increasing = true;
-  private isSimulationRunning = false;
+  private updateInterval: any;
 
   constructor(
     private timeCalc: TimeCalculationService,
     private windowService: WindowService
   ) {}
 
-  // Calcula tempo de trabalho baseado no horário real (não utilizada, apenas para testes)
-  calculateWorkTime(): void {
+  updateWorkTime(): void {
     const result = this.timeCalc.calculateWorkTime(
-      this.timeEntries.checkIn,
-      this.timeEntries.checkOut,
-      this.timeEntries.checkIn2
-    );
+      this.checkInInput.nativeElement.value,
+      this.checkOutInput.nativeElement.value,
+      this.checkIn2Input.nativeElement.value
+    ); 
 
     this.firstPeriodTime = result.firstPeriod;
     this.secondPeriodTime = result.secondPeriod;
@@ -54,43 +49,33 @@ export class Home {
     this.endTime = result.endTime;
   }
 
-  startTimeSimulation(): void {
-    if (this.isSimulationRunning) return;
-
-    this.isSimulationRunning = true;
-
-    setInterval(() => {
-      if (this.increasing) {
-        this.timeCalc.incrementTime(this.workedTime);
-        this.timeCalc.incrementTime(this.secondPeriodTime);
-        this.timeCalc.decrementRemainingTime(this.remainingTime);
-        this.timeCalc.incrementTimeWithLimit(this.endTime, 24);
-
-        if (this.workedTime.hours === 8 && this.workedTime.minutes === 0) {
-          this.increasing = false;
-        }
-      } else {
-        this.timeCalc.decrementTime(this.workedTime);
-        this.timeCalc.decrementTime(this.secondPeriodTime);
-        this.timeCalc.incrementTime(this.remainingTime);
-        this.timeCalc.decrementTime(this.endTime);
-
-        if (this.endTime.hours < 0) {
-          this.endTime.hours += 24;
-        }
-
-        if (this.workedTime.hours === 0 && this.workedTime.minutes === 0) {
-          this.increasing = true;
-        }
-      }
-    }, 1000);
-  }
-
   get progressPercentageValue(): number {
     const totalWorkMinutes = (this.workedTime.hours * 60) + this.workedTime.minutes;
     const totalJourneyMinutes = 8 * 60;
     const percentage = (totalWorkMinutes / totalJourneyMinutes) * 100;
     return Math.min(percentage, 100);
+  }
+
+  get firstPeriodPercentage(): number {
+    const firstPeriodMinutes = (this.firstPeriodTime.hours * 60) + this.firstPeriodTime.minutes;
+    const totalJourneyMinutes = 8 * 60;
+    const percentage = (firstPeriodMinutes / totalJourneyMinutes) * 100;
+    return Math.min(percentage, 100);
+  }
+
+  get secondPeriodPercentage(): number {
+    const secondPeriodMinutes = (this.secondPeriodTime.hours * 60) + this.secondPeriodTime.minutes;
+    const totalJourneyMinutes = 8 * 60;
+    const percentage = (secondPeriodMinutes / totalJourneyMinutes) * 100;
+    return Math.min(percentage, 100);
+  }
+
+  get hasFirstPeriod(): boolean {
+    return this.checkInInput?.nativeElement?.value?.length > 0;
+  }
+
+  get hasSecondPeriod(): boolean { 
+    return this.checkIn2Input?.nativeElement?.value?.length > 0;
   }
 
   async onMinimizeClick(): Promise<void> {
@@ -102,31 +87,25 @@ export class Home {
   }
 
   onStartMonitoringClick(): void {
-    // Calcula os valores iniciais baseados nos inputs
-    const result = this.timeCalc.calculateWorkTime(
-      this.timeEntries.checkIn,
-      this.timeEntries.checkOut,
-      this.timeEntries.checkIn2
-    );
+    // Calcula os valores iniciais
+    this.updateWorkTime();
 
-    // Define os valores iniciais calculados
-    this.firstPeriodTime = result.firstPeriod;
-    this.secondPeriodTime = result.secondPeriod;
-    this.workedTime = result.workedTime;
-    this.remainingTime = result.remainingTime;
-    this.endTime = result.endTime;
+    // Ativa o monitoramento
+    this.isMonitoring = true;
 
-    // Ativa as métricas
-    this.hasTimeData = true;
-
-    // Inicia a simulação a partir dos valores calculados
-    this.startTimeSimulation();
+    // Atualiza os valores
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+    this.updateInterval = setInterval(() => {
+      this.updateWorkTime();
+    }, 1000);
   }
 
   onImportClick(): void {
-    this.timeEntries.checkIn = '08:00';
-    this.timeEntries.checkOut = '12:00';
-    this.timeEntries.checkIn2 = '13:00';
+    this.checkInInput.nativeElement.value = '08:00';
+    this.checkOutInput.nativeElement.value = '12:00';
+    this.checkIn2Input.nativeElement.value = '13:00';
   }
 
   onSettingsClick(): void {
@@ -135,5 +114,11 @@ export class Home {
 
   onCloseSettingsModal(): void {
     this.showSettingsModal = false;
+  }
+
+  ngOnDestroy(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   }
 }

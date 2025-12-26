@@ -452,14 +452,6 @@ input:focus {
   width: 100%;
 }
 
-.period-item:first-child {
-  width: 15%;
-}
-
-.period-item:last-child {
-  width: 100%;
-}
-
 .period-bar.period-ended {
   background-color: var(--border-gray);
   outline: 2px solid var(--bg-white);

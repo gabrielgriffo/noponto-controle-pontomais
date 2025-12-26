@@ -27,7 +27,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkIn" />
+              maxlength="5" appTimeInput #checkInInput />
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkOut" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkOut" />
+              maxlength="5" appTimeInput #checkOutInput />
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn2" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkIn2" />
+              maxlength="5" appTimeInput #checkIn2Input />
           </div>
         </div>
       </div>
@@ -91,11 +91,11 @@
       <div class="work-periods-title">Períodos de Trabalho</div>
       <div class="periods-container">
         <div class="periods-back-bar">
-          <div class="period-item">
-            <div class="period-bar period-ended"></div>
+          <div class="period-item" [style.width.%]="firstPeriodPercentage" *ngIf="isMonitoring && hasFirstPeriod">
+            <div class="period-bar" [ngClass]="hasSecondPeriod ? 'period-ended' : 'period-green animated'"></div>
             <span class="period-label">{{ firstPeriodTime | timeFormat:'duration' }}</span>
           </div>
-          <div class="period-item">
+          <div class="period-item" [style.width.%]="secondPeriodPercentage" *ngIf="isMonitoring && hasSecondPeriod">
             <div class="period-bar period-green animated"></div>
             <span class="period-label">{{ secondPeriodTime | timeFormat:'duration' }}</span>
           </div>
@@ -118,7 +118,7 @@
       </div>
     </section>
 
-    <div class="metrics-empty-state" *ngIf="!hasTimeData">
+    <div class="metrics-empty-state" *ngIf="!isMonitoring">
       <div class="empty-state-content">
         <p class="empty-state-text">Insira os horários e <span class="highlight-green">inicie o monitoramento</span> para visualizar suas métricas.</p>
       </div>
