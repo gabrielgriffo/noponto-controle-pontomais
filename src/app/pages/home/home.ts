@@ -29,6 +29,9 @@ export class Home implements OnDestroy {
   endTime: TimeObject = { hours: 0, minutes: 0 };
 
   private updateInterval: any;
+  private capturedCheckIn: string = '';
+  private capturedCheckOut: string = '';
+  private capturedCheckIn2: string = '';
 
   constructor(
     private timeCalc: TimeCalculationService,
@@ -37,10 +40,10 @@ export class Home implements OnDestroy {
 
   updateWorkTime(): void {
     const result = this.timeCalc.calculateWorkTime(
-      this.checkInInput.nativeElement.value,
-      this.checkOutInput.nativeElement.value,
-      this.checkIn2Input.nativeElement.value
-    ); 
+      this.capturedCheckIn,
+      this.capturedCheckOut,
+      this.capturedCheckIn2
+    );
 
     this.firstPeriodTime = result.firstPeriod;
     this.secondPeriodTime = result.secondPeriod;
@@ -71,11 +74,11 @@ export class Home implements OnDestroy {
   }
 
   get hasFirstPeriod(): boolean {
-    return this.checkInInput?.nativeElement?.value?.length > 0;
+    return this.capturedCheckIn.length > 0;
   }
 
-  get hasSecondPeriod(): boolean { 
-    return this.checkIn2Input?.nativeElement?.value?.length > 0;
+  get hasSecondPeriod(): boolean {
+    return this.capturedCheckIn2.length > 0;
   }
 
   async onMinimizeClick(): Promise<void> {
@@ -87,13 +90,14 @@ export class Home implements OnDestroy {
   }
 
   onStartMonitoringClick(): void {
-    // Calcula os valores iniciais
+    this.capturedCheckIn = this.checkInInput.nativeElement.value;
+    this.capturedCheckOut = this.checkOutInput.nativeElement.value;
+    this.capturedCheckIn2 = this.checkIn2Input.nativeElement.value;
+
     this.updateWorkTime();
 
-    // Ativa o monitoramento
     this.isMonitoring = true;
 
-    // Atualiza os valores
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }

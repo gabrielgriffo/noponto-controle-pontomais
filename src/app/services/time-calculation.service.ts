@@ -99,7 +99,13 @@ export class TimeCalculationService {
 
     const totalWorkedMinutes = firstPeriod + secondPeriod;
     const remainingMinutes = Math.max(0, 480 - totalWorkedMinutes);
-    const endTimeMinutes = currentMinutes + remainingMinutes;
+
+    let endTimeMinutes: number;
+    if (totalWorkedMinutes >= 480) {
+      endTimeMinutes = currentMinutes - (totalWorkedMinutes - 480);
+    } else {
+      endTimeMinutes = currentMinutes + remainingMinutes;
+    }
 
     return {
       firstPeriod: this.minutesToTimeObject(firstPeriod),
