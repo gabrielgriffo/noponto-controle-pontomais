@@ -3,7 +3,7 @@
      [class.exiting]="toast.isExiting"
      [style.z-index]="getZIndex(i)"
      [style.bottom.px]="getBottomOffset(i)"
-     [style.opacity]="getOpacity(i)">
+     [style.filter]="getBlur(i)">
   <div class="toast" [ngClass]="'toast-' + toast.type"
        [style.scale]="getScale(i)">
     <span class="toast-message">{{ toast.message }}</span>

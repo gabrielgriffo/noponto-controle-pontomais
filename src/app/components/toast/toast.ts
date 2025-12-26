@@ -86,50 +86,49 @@ export class Toast implements OnInit, OnDestroy {
     return this.baseZIndex + index;
   }
 
-  getBottomOffset(index: number): number {
-    const toast = this.toasts[index];
-    if (toast.isExiting) return 20;
-
-    // Conta quantos toasts ativos estão DEPOIS deste no array
-    const toastsAbove = this.toasts
+  private countActiveToastsAfter(index: number): number {
+    return this.toasts
       .slice(index + 1)
       .filter(t => !t.isExiting)
       .length;
-
-    return 20 + (toastsAbove * 10);
   }
 
-  getOpacity(index: number): number | undefined {
+  getBottomOffset(index: number): number {
     const toast = this.toasts[index];
 
-    // Deixa animação CSS controlar opacidade ao sair
+    if (toast.isExiting){
+      return 20;
+    }
+
+    const toastsAbove = this.countActiveToastsAfter(index);
+
+    const offset = 20 + (toastsAbove * 10)
+    return offset;
+  }
+
+  getBlur(index: number): string | undefined {
+    const toast = this.toasts[index];
+
     if (toast.isExiting) {
       return undefined;
     }
 
-    const toastsAbove = this.toasts
-      .slice(index + 1)
-      .filter(t => !t.isExiting)
-      .length;
+    const toastsAbove = this.countActiveToastsAfter(index);
 
-    const opacity = 1 - (toastsAbove * 0.25);
-    return Math.max(0.5, opacity);
+    const blur = "blur(" + (toastsAbove * 0.40) + "px)";
+    return blur;
   }
 
   getScale(index: number): number | undefined {
     const toast = this.toasts[index];
 
-    // Deixa animação CSS controlar scale ao sair
     if (toast.isExiting) {
       return undefined;
     }
 
-    const toastsAbove = this.toasts
-      .slice(index + 1)
-      .filter(t => !t.isExiting)
-      .length;
+    const toastsAbove = this.countActiveToastsAfter(index);
 
     const scale = 1 - (toastsAbove * 0.05);
-    return Math.max(0.5, scale);
+    return scale;
   }
 }

@@ -36,7 +36,7 @@
 .toast {
   background-color: var(--bg-white);
   border-radius: 8px;
-  padding: 14px 16px;
+  padding: 6px 8px;
   min-width: 320px;
   max-width: 400px;
   display: flex;
@@ -52,7 +52,7 @@
 /* Toast Message */
 .toast-message {
   flex: 1;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-dark);
   font-family: 'Inter', sans-serif;
