@@ -27,7 +27,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" (input)="onTimeInput('checkIn')" /> 
+              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkIn" />
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkOut" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" (input)="onTimeInput('checkOut')" />
+              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkOut" />
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn2" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" (input)="onTimeInput('checkIn2')" />
+              maxlength="5" appTimeInput [(ngModel)]="timeEntries.checkIn2" />
           </div>
         </div>
       </div>

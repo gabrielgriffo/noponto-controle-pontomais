@@ -1,99 +1,84 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { getCurrentWindow } from '@tauri-apps/api/window';
 import { SettingsModal } from '../settings-modal/settings-modal';
 import { FlipText } from '../../components/flip-text/flip-text';
 import { TimeFormatPipe } from '../../pipes/time-format.pipe';
+import { TimeInputDirective } from '../../directives/time-input.directive';
+import { TimeCalculationService } from '../../services/time-calculation.service';
+import { WindowService } from '../../services/window.service';
+import { TimeObject } from '../../models/time-object';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, SettingsModal, FlipText, TimeFormatPipe],
+  imports: [CommonModule, FormsModule, SettingsModal, FlipText, TimeFormatPipe, TimeInputDirective],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class Home {
   showSettingsModal = false;
+  hasTimeData = false;
+
   timeEntries = {
     checkIn: '',
     checkOut: '',
     checkIn2: ''
   };
 
-  // Tempo Trabalhado
-  workedTime = {
-    hours: 7,
-    minutes: 50
-  };
+  workedTime: TimeObject = { hours: 0, minutes: 0 };
+  remainingTime: TimeObject = { hours: 0, minutes: 0 };
+  firstPeriodTime: TimeObject = { hours: 0, minutes: 0 };
+  secondPeriodTime: TimeObject = { hours: 0, minutes: 0 };
+  endTime: TimeObject = { hours: 0, minutes: 0 };
 
-  // Tempo Restante
-  remainingTime = {
-    hours: 7,
-    minutes: 50
-  };
+  private increasing = true;
+  private isSimulationRunning = false;
 
-  // Primeiro período de trabalho
-  firstPeriodTime = {
-    hours: 2,
-    minutes: 34
-  };
+  constructor(
+    private timeCalc: TimeCalculationService,
+    private windowService: WindowService
+  ) {}
 
-  // Segundo período de trabalho
-  secondPeriodTime = {
-    hours: 5,
-    minutes: 21
-  };
+  // Calcula tempo de trabalho baseado no horário real (não utilizada, apenas para testes)
+  calculateWorkTime(): void {
+    const result = this.timeCalc.calculateWorkTime(
+      this.timeEntries.checkIn,
+      this.timeEntries.checkOut,
+      this.timeEntries.checkIn2
+    );
 
-  // Horário de fim do expediente
-  endTime = {
-    hours: 18,
-    minutes: 54
-  };
-
-  private increasing = true; // Controla se está crescendo ou decrescendo
-  hasTimeData: boolean = true;
-
-  constructor() {
-    this.startTimeSimulation();
+    this.firstPeriodTime = result.firstPeriod;
+    this.secondPeriodTime = result.secondPeriod;
+    this.workedTime = result.workedTime;
+    this.remainingTime = result.remainingTime;
+    this.endTime = result.endTime;
   }
 
   startTimeSimulation(): void {
+    if (this.isSimulationRunning) return;
+
+    this.isSimulationRunning = true;
+
     setInterval(() => {
       if (this.increasing) {
-        // Adiciona 10 minutos
-        this.workedTime.minutes += 1;
-        this.remainingTime.minutes += 1;
+        this.timeCalc.incrementTime(this.workedTime);
+        this.timeCalc.incrementTime(this.secondPeriodTime);
+        this.timeCalc.decrementRemainingTime(this.remainingTime);
+        this.timeCalc.incrementTimeWithLimit(this.endTime, 24);
 
-        // Converte minutos em horas se necessário
-        if (this.workedTime.minutes >= 60) {
-          this.workedTime.hours++;
-          this.workedTime.minutes -= 60;
-        }
-        if (this.remainingTime.minutes >= 60) {
-          this.remainingTime.hours++;
-          this.remainingTime.minutes -= 60;
-        }
-
-        // Verifica se chegou em 8 horas
         if (this.workedTime.hours === 8 && this.workedTime.minutes === 0) {
           this.increasing = false;
         }
       } else {
-        // Subtrai 1 minutos
-        this.workedTime.minutes -= 1;
-        this.remainingTime.minutes -= 1;
+        this.timeCalc.decrementTime(this.workedTime);
+        this.timeCalc.decrementTime(this.secondPeriodTime);
+        this.timeCalc.incrementTime(this.remainingTime);
+        this.timeCalc.decrementTime(this.endTime);
 
-        // Converte horas em minutos se necessário
-        if (this.workedTime.minutes < 0) {
-          this.workedTime.hours--;
-          this.workedTime.minutes += 60;
-        }
-        if (this.remainingTime.minutes < 0) {
-          this.remainingTime.hours--;
-          this.remainingTime.minutes += 60;
+        if (this.endTime.hours < 0) {
+          this.endTime.hours += 24;
         }
 
-        // Verifica se chegou em 0 horas
         if (this.workedTime.hours === 0 && this.workedTime.minutes === 0) {
           this.increasing = true;
         }
@@ -101,84 +86,54 @@ export class Home {
     }, 1000);
   }
 
-  onTimeInput(field: keyof typeof this.timeEntries): void {
-    const inputElement = document.getElementById(field) as HTMLInputElement
-    let value = inputElement.value.replace(/[^0-9]/g, '');
-    
-    // Se digitou um único dígito >= 3 nas horas, adiciona 0 antes
-    if (value.length === 1 && parseInt(value) >= 3) {
-      value = '0' + value;
-    }
-
-    // Valida se as horas são < 24
-    if (value.length >= 2) {
-      const hours = parseInt(value.slice(0, 2));
-      if (hours >= 24) {
-        value = value.slice(0, -1); // Remove o último dígito digitado
-      }
-    }
-
-    // Se digitou um único dígito >= 6 nos minutos, adiciona 0 antes
-    if (value.length === 3 && parseInt(value[2]) >= 6) {
-      value = value.slice(0, 2) + '0' + value[2];
-    }
-
-    if (value.length === 0) {
-      inputElement.value = '';
-    } else if (value.length <= 2) {
-      inputElement.value = value;
-    } else {
-      inputElement.value = value.slice(0, 2) + ':' + value.slice(2, 4);
-    }
-    
-    this.timeEntries[field] = inputElement.value;
-  }
-
   get progressPercentageValue(): number {
-    // Calcula o percentual baseado em uma jornada de 8 horas (480 minutos)
     const totalWorkMinutes = (this.workedTime.hours * 60) + this.workedTime.minutes;
-    const totalJourneyMinutes = 8 * 60; // 480 minutos
+    const totalJourneyMinutes = 8 * 60;
     const percentage = (totalWorkMinutes / totalJourneyMinutes) * 100;
-
-    return Math.min(percentage, 100); // Limita a 100%
+    return Math.min(percentage, 100);
   }
 
-  // get hasTimeData(): boolean {
-  //   // Verifica se há pelo menos um horário válido no formato HH:MM
-  //   const hasValidCheckIn = this.timeEntries.checkIn.includes(':');
-  //   const hasValidCheckOut = this.timeEntries.checkOut.includes(':');
-  //   const hasValidCheckIn2 = this.timeEntries.checkIn2.includes(':');
-    
-  //   // return true;
-  //   return hasValidCheckIn || hasValidCheckOut || hasValidCheckIn2;
-  // }
-
-  async onMinimizeClick() {
-    const window = await getCurrentWindow();
-    window.minimize();
+  async onMinimizeClick(): Promise<void> {
+    await this.windowService.minimize();
   }
 
-  async onCloseClick() {
-    const window = await getCurrentWindow();
-    window.close();
+  async onCloseClick(): Promise<void> {
+    await this.windowService.close();
   }
 
-  onStartMonitoringClick(){
-    // this.timeEntries.checkIn
-    // console.log(this.timeEntries.checkIn);
-    
-    // this.workedTime.hours
+  onStartMonitoringClick(): void {
+    // Calcula os valores iniciais baseados nos inputs
+    const result = this.timeCalc.calculateWorkTime(
+      this.timeEntries.checkIn,
+      this.timeEntries.checkOut,
+      this.timeEntries.checkIn2
+    );
+
+    // Define os valores iniciais calculados
+    this.firstPeriodTime = result.firstPeriod;
+    this.secondPeriodTime = result.secondPeriod;
+    this.workedTime = result.workedTime;
+    this.remainingTime = result.remainingTime;
+    this.endTime = result.endTime;
+
+    // Ativa as métricas
+    this.hasTimeData = true;
+
+    // Inicia a simulação a partir dos valores calculados
+    this.startTimeSimulation();
   }
 
-  onImportClick(){
-    this.hasTimeData = !this.hasTimeData;
+  onImportClick(): void {
+    this.timeEntries.checkIn = '08:00';
+    this.timeEntries.checkOut = '12:00';
+    this.timeEntries.checkIn2 = '13:00';
   }
 
-  onSettingsClick() {
+  onSettingsClick(): void {
     this.showSettingsModal = true;
   }
 
-  onCloseSettingsModal() {
+  onCloseSettingsModal(): void {
     this.showSettingsModal = false;
   }
 }
