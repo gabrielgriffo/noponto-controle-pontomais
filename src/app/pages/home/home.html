@@ -80,13 +80,13 @@
 
   <!-- Container de métricas -->
   <div class="metrics-container">
-    <!-- Métrica principal: Tempo Trabalhado -->
+    <!-- Métrica principal: Tempo Restante -->
     <section class="metrics-section">
       <div class="metrics-line">
         <div class="metric-focus">
-          <div class="metric-label">Tempo Trabalhado</div>
+          <div class="metric-label">Tempo Restante</div>
           <div class="metric-focus-value">
-            <app-flip-text [text]="workedTime | timeFormat:'duration'" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
+            <app-flip-text [text]="remainingTime | timeFormat:'duration'" [fontSize]="48" [grayPrefix]="'00h'"></app-flip-text>
           </div>
         </div>
       </div>
@@ -127,11 +127,11 @@
     <!-- Métricas complementares -->
     <section class="metrics-section">
       <div class="metrics-line">
-        <!-- Cartão: Tempo Restante -->
+        <!-- Cartão: Tempo Trabalhado -->
         <div class="metric-card">
-          <div class="metric-label">Tempo Restante</div>
+          <div class="metric-label">Tempo Trabalhado</div>
           <div class="metric-value">
-            <app-flip-text [text]="remainingTime | timeFormat:'duration'" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
+            <app-flip-text [text]="workedTime | timeFormat:'duration'" [fontSize]="18" [grayPrefix]="'00h'"></app-flip-text>
           </div>
         </div>
         <!-- Cartão: Fim do Expediente -->

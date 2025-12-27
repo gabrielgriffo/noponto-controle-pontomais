@@ -82,29 +82,71 @@ export class TimeCalculationService {
     const checkOutMinutes = this.timeStringToMinutes(checkOut);
     const checkIn2Minutes = this.timeStringToMinutes(checkIn2);
     const currentMinutes = this.getCurrentTimeInMinutes();
+    const targetJourneyMinutes = 8 * 60; // 8 horas
 
     let firstPeriod = 0;
     let secondPeriod = 0;
+    let totalWorkedMinutes = 0;
+    let remainingMinutes = 0;
+    let endTimeMinutes = 0;
 
+    // Cenário A: Apenas entrada preenchida
     if (checkInMinutes && !checkOutMinutes && !checkIn2Minutes) {
       firstPeriod = this.calculateTimeDifference(checkInMinutes, currentMinutes);
-    }
-    else if (checkInMinutes && checkOutMinutes) {
-      firstPeriod = this.calculateTimeDifference(checkInMinutes, checkOutMinutes);
+      totalWorkedMinutes = firstPeriod;
+      remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
 
-      if (checkIn2Minutes) {
-        secondPeriod = this.calculateTimeDifference(checkIn2Minutes, currentMinutes);
+      if (totalWorkedMinutes >= targetJourneyMinutes) {
+        // Já completou 8h: fim fixo
+        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+      } else {
+        endTimeMinutes = currentMinutes + remainingMinutes;
       }
     }
+    // Cenário B: Entrada e saída preenchidos, sem retorno
+    else if (checkInMinutes && checkOutMinutes && !checkIn2Minutes) {
+      firstPeriod = this.calculateTimeDifference(checkInMinutes, checkOutMinutes);
+      totalWorkedMinutes = firstPeriod;
+      remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
 
-    const totalWorkedMinutes = firstPeriod + secondPeriod;
-    const remainingMinutes = Math.max(0, 480 - totalWorkedMinutes);
+      if (totalWorkedMinutes >= targetJourneyMinutes) {
+        // Já completou 8h no primeiro período: fim fixo
+        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+      } else {
+        // Primeiro período terminou, usa hora atual + tempo restante
+        endTimeMinutes = currentMinutes + remainingMinutes;
+      }
+    }
+    // Cenário C: Todos os 3 horários preenchidos (entrada, saída e retorno)
+    else if (checkInMinutes && checkOutMinutes && checkIn2Minutes) {
+      // Primeiro período: entrada até saída (período fechado)
+      firstPeriod = this.calculateTimeDifference(checkInMinutes, checkOutMinutes);
 
-    let endTimeMinutes: number;
-    if (totalWorkedMinutes >= 480) {
-      endTimeMinutes = currentMinutes - (totalWorkedMinutes - 480);
-    } else {
-      endTimeMinutes = currentMinutes + remainingMinutes;
+      // Segundo período: SÓ conta se hora atual >= checkIn2
+      if (currentMinutes >= checkIn2Minutes) {
+        secondPeriod = this.calculateTimeDifference(checkIn2Minutes, currentMinutes);
+      } else {
+        secondPeriod = 0; // Ainda não começou o 2º período
+      }
+
+      // Tempo total trabalhado
+      totalWorkedMinutes = firstPeriod + secondPeriod;
+
+      // Tempo restante
+      remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
+
+      // Fim do expediente
+      if (totalWorkedMinutes >= targetJourneyMinutes) {
+        // Já completou 8h: calcular o horário exato em que atingiu
+        const secondPeriodNeeded = targetJourneyMinutes - firstPeriod;
+        endTimeMinutes = checkIn2Minutes + secondPeriodNeeded;
+      } else if (currentMinutes >= checkIn2Minutes) {
+        // Está no 2º período mas ainda não completou: hora atual + tempo restante
+        endTimeMinutes = currentMinutes + remainingMinutes;
+      } else {
+        // Ainda não começou 2º período: checkIn2 + tempo restante
+        endTimeMinutes = checkIn2Minutes + remainingMinutes;
+      }
     }
 
     return {

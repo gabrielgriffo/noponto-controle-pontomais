@@ -107,9 +107,14 @@ export class Home implements OnDestroy {
   }
 
   onImportClick(): void {
-    this.checkInInput.nativeElement.value = '08:00';
-    this.checkOutInput.nativeElement.value = '12:00';
-    this.checkIn2Input.nativeElement.value = '13:00';
+    this.checkInInput.nativeElement.value = '01:00';
+    this.checkOutInput.nativeElement.value = '01:10';
+    this.checkIn2Input.nativeElement.value = '02:00';
+
+    
+    // this.checkInInput.nativeElement.value = '08:00';
+    // this.checkOutInput.nativeElement.value = '12:00';
+    // this.checkIn2Input.nativeElement.value = '13:00';
   }
 
   onSettingsClick(): void {
