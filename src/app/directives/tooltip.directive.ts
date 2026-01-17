@@ -132,11 +132,32 @@ export class TooltipDirective implements OnDestroy {
     const positionStrategy = this.overlayPositionBuilder
       .flexibleConnectedTo(this.elementRef)
       .withPositions(positions)
+      .withViewportMargin(2)
       .withPush(true); // CDK ajusta posição se colidir com bordas
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition()
+    });
+
+    // Calcula a posição da seta quando o tooltip for reposicionado
+    positionStrategy.positionChanges.subscribe(() => {
+      if (this.tooltipRef && this.overlayRef) {
+        // Calcula posições em tempo real para lidar com mudanças de layout
+        const elementRect = this.elementRef.nativeElement.getBoundingClientRect();
+        const overlayElement = this.overlayRef.overlayElement;
+
+        if (overlayElement) {
+          const overlayRect = overlayElement.getBoundingClientRect();
+
+          // Calcula a distância do início do tooltip até o centro do elemento
+          const elementCenterX = elementRect.left + (elementRect.width / 2);
+          const arrowOffsetFromTooltipLeft = -overlayRect.left -4 + elementCenterX;
+
+          // Atualiza a posição da seta
+          this.tooltipRef.setInput('arrowLeft', `${arrowOffsetFromTooltipLeft}px`);
+        }
+      }
     });
 
     const tooltipPortal = new ComponentPortal(TooltipComponent);
@@ -179,16 +200,16 @@ export class TooltipDirective implements OnDestroy {
     const gap = 8;
     const position = this.tooltipPosition();
     const mainPosition = this.getPositionConfig(position, gap);
-
+    
     // Define fallbacks: se não couber em 'top', tenta 'bottom', depois 'left', etc
     const fallbackPositions: ('top' | 'bottom' | 'left' | 'right')[] = [];
 
     switch (position) {
       case 'top':
-        fallbackPositions.push('bottom', 'left', 'right');
+        fallbackPositions.push('bottom');
         break;
       case 'bottom':
-        fallbackPositions.push('top', 'left', 'right');
+        fallbackPositions.push('top');
         break;
       case 'left':
         fallbackPositions.push('right', 'top', 'bottom');

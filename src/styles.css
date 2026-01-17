@@ -220,7 +220,6 @@ button{
 .app-tooltip[data-position="top"] .app-tooltip-arrow {
   bottom: -4px;
   left: 50%;
-  transform: translateX(-50%);
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 4px solid var(--text-dark);
@@ -229,7 +228,6 @@ button{
 .app-tooltip[data-position="bottom"] .app-tooltip-arrow {
   top: -4px;
   left: 50%;
-  transform: translateX(-50%);
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-bottom: 4px solid var(--text-dark);
@@ -238,7 +236,6 @@ button{
 .app-tooltip[data-position="left"] .app-tooltip-arrow {
   right: -4px;
   top: 50%;
-  transform: translateY(-50%);
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-left: 4px solid var(--text-dark);
@@ -247,7 +244,6 @@ button{
 .app-tooltip[data-position="right"] .app-tooltip-arrow {
   left: -4px;
   top: 50%;
-  transform: translateY(-50%);
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-right: 4px solid var(--text-dark);

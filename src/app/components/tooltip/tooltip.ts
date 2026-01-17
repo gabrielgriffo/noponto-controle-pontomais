@@ -10,4 +10,5 @@ export class TooltipComponent {
   position = input<'top' | 'bottom' | 'left' | 'right'>('top');
   tooltipId = input.required<string>();
   isVisible = input<boolean>(false);
+  arrowLeft = input<string>('50%');
 }

@@ -4,6 +4,6 @@
   [attr.data-position]="position()"
   [attr.role]="'tooltip'"
   [attr.id]="tooltipId()">
-  <div class="app-tooltip-arrow"></div>
+  <div class="app-tooltip-arrow" [style.left]="arrowLeft()"></div>
   <div class="app-tooltip-text">{{ text() }}</div>
 </div>

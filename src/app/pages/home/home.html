@@ -14,11 +14,15 @@
       <span class="icon-settings"></span>
     </button>
     <!-- Botão minimizar -->
-    <button class="icon-button minimize" (click)="onMinimizeClick()">
+    <button class="icon-button minimize" (click)="onMinimizeClick()" 
+      tooltipPosition="bottom"
+      appTooltip="Minimizar">
       <span class="icon-minimize"></span>
     </button>
     <!-- Botão fechar -->
-    <button class="icon-button close" (click)="onCloseClick()">
+    <button class="icon-button close" (click)="onCloseClick()"
+      tooltipPosition="bottom"
+      appTooltip="Fechar">
       <span class="icon-close"></span>
     </button>
   </div>
@@ -159,7 +163,7 @@
     </div>
     <!-- Status: Alarme -->
     <div class="status-item"
-         appTooltip="Notificação sonora quando faltar tempo para o fim do expediente"
+         appTooltip="Notificação sonora quando faltar tempo para o fim do expediente Notificação sonora quando faltar tempo para o fim do expediente"
          tooltipPosition="top">
       <span class="status-label">Alarme</span>
       <span class="status-value success">Ok</span>
