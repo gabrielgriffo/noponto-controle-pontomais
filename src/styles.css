@@ -16,6 +16,9 @@
   --text-placeholder: #d1d5db;
   --gray-medium: #7C7F82;
   --gray-placeholder: #C3C4C3;
+
+  /* Transitions */
+  --transition-default: 0.5s ease;
 }
 
 * {

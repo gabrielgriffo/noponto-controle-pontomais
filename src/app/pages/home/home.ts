@@ -8,6 +8,7 @@ import { TimeCalculationService } from '../../services/time-calculation.service'
 import { WindowService } from '../../services/window.service';
 import { TimeObject } from '../../models/time-object';
 import { TimeUtilsService } from '../../services/time-utils.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-home',
@@ -23,6 +24,10 @@ export class Home implements OnDestroy {
   @ViewChild('checkOutInput') checkOutInput!: ElementRef<HTMLInputElement>;
   @ViewChild('checkIn2Input') checkIn2Input!: ElementRef<HTMLInputElement>;
 
+  checkInError = false;
+  checkOutError = false;
+  checkIn2Error = false;
+
   workedTime: TimeObject = { hours: 0, minutes: 0 };
   remainingTime: TimeObject = { hours: 0, minutes: 0 };
   firstPeriodTime: TimeObject = { hours: 0, minutes: 0 };
@@ -37,7 +42,8 @@ export class Home implements OnDestroy {
   constructor(
     private timeCalc: TimeCalculationService,
     private timeUtils: TimeUtilsService,
-    private windowService: WindowService
+    private windowService: WindowService,
+    private toastService: ToastService
   ) {}
 
   updateWorkTime(): void {
@@ -83,6 +89,44 @@ export class Home implements OnDestroy {
     return this.capturedCheckIn2.length > 0;
   }
 
+  /**
+   * Converte um horário no formato HH:MM para minutos totais
+   */
+  private timeToMinutes(time: string): number {
+    if (!time || time.length !== 5) return -1;
+    const [hours, minutes] = time.split(':').map(Number);
+    if (isNaN(hours) || isNaN(minutes)) return -1;
+    return hours * 60 + minutes;
+  }  
+
+  /**
+   * Valida os horários verificando se cada um é maior que o anterior
+   */
+  validateTimeInputs(): void {
+    const checkIn = this.checkInInput?.nativeElement.value || '';
+    const checkOut = this.checkOutInput?.nativeElement.value || '';
+    const checkIn2 = this.checkIn2Input?.nativeElement.value || '';
+
+    const checkInMinutes = this.timeToMinutes(checkIn);
+    const checkOutMinutes = this.timeToMinutes(checkOut);
+    const checkIn2Minutes = this.timeToMinutes(checkIn2);
+
+    if (checkOutMinutes !== -1 && checkInMinutes !== -1 && checkOutMinutes < checkInMinutes) {
+      this.checkOutError = true;
+      this.toastService.error('Horário de saída não pode ser menor que o horário de entrada', 3000);
+    }
+
+    if (checkIn2Minutes !== -1 && checkOutMinutes !== -1 && checkIn2Minutes < checkOutMinutes) {
+      this.checkIn2Error = true;
+      this.toastService.error('Horário de retorno não pode ser menor que o horário de saída', 3000);
+    }
+
+    setTimeout(() => {
+      this.checkOutError = false;
+      this.checkIn2Error = false;
+    }, 3000);
+  }
+
   async onMinimizeClick(): Promise<void> {
     await this.windowService.minimize();
   }
@@ -92,26 +136,33 @@ export class Home implements OnDestroy {
   }
 
   onStartMonitoringClick(): void {
-    this.capturedCheckIn = this.checkInInput.nativeElement.value;
-    this.capturedCheckOut = this.checkOutInput.nativeElement.value;
-    this.capturedCheckIn2 = this.checkIn2Input.nativeElement.value;
 
-    this.updateWorkTime();
+    this.validateTimeInputs();
 
-    this.isMonitoring = true;
+    if (!this.checkOutError && !this.checkIn2Error) {
+      this.capturedCheckIn = this.checkInInput.nativeElement.value;
+      this.capturedCheckOut = this.checkOutInput.nativeElement.value;
+      this.capturedCheckIn2 = this.checkIn2Input.nativeElement.value;
 
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-    this.updateInterval = setInterval(() => {
       this.updateWorkTime();
-    }, 1000);
+
+      this.isMonitoring = true;
+
+      if (this.updateInterval) {
+        clearInterval(this.updateInterval);
+      }
+      this.updateInterval = setInterval(() => {
+        this.updateWorkTime();
+      }, 1000);
+    } else {
+      this.isMonitoring = false;
+    }
   }
 
   onImportClick(): void {
     this.checkInInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
     this.checkOutInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
-    this.checkIn2Input.nativeElement.value = this.timeUtils.formatTimeInput('13:00');
+    this.checkIn2Input.nativeElement.value = this.timeUtils.formatTimeInput('11:00');
   }
 
   onSettingsClick(): void {

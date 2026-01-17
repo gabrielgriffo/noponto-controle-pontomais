@@ -32,7 +32,7 @@
     <div class="time-inputs">
 
       <!-- Primeira Entrada -->
-      <div class="time-entry">
+      <div class="time-entry" [class.error]="checkInError">
         <label for="checkIn" class="time-label">Entrada</label>
         <div class="time-input">
           <div class="form">
@@ -42,7 +42,7 @@
         </div>
       </div>
       <!-- Primeira Saída -->
-      <div class="time-entry">
+      <div class="time-entry" [class.error]="checkOutError">
         <label for="checkOut" class="time-label">Saída</label>
         <div class="time-input">
           <div class="form">
@@ -52,7 +52,7 @@
         </div>
       </div>
       <!-- Segunda Entrada -->
-      <div class="time-entry">
+      <div class="time-entry" [class.error]="checkIn2Error">
         <label for="checkIn2" class="time-label">Entrada</label>
         <div class="time-input">
           <div class="form">

@@ -116,6 +116,7 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--gray-medium);
+  transition: color var(--transition-default);
 }
 
 .time-value {
@@ -153,6 +154,21 @@
   border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.time-entry.error {
+  .time-label{
+    color: #ff3b30;
+  }
+
+  .input {
+    color: #ff3b30;
+    caret-color: #ff3b30;
+  }
+
+  .form:before {
+    background: #ff3b30;
+  }
+}
+
 /* styling of Input */
 .input {
   background-color: transparent;
@@ -166,6 +182,7 @@
   font-size: 18px;
   font-weight: 500;
   caret-color: var(--primary-green);
+  transition: color var(--transition-default), caret-color var(--transition-default);
 }
 
 .input::placeholder {
