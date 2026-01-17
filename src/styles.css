@@ -1,6 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/cdk/overlay-prebuilt.css';
 
-/* Theme Variables */
 :root {
   --bg-light: #f4f5f4;
   --bg-white: #fcfcfc;
@@ -16,8 +15,6 @@
   --text-placeholder: #d1d5db;
   --gray-medium: #7C7F82;
   --gray-placeholder: #C3C4C3;
-
-  /* Transitions */
   --transition-default: 0.5s ease;
 }
 
@@ -31,7 +28,6 @@
   outline: none;
 }
 
-/* Icons */
 .i {
   display: inline-block;
   vertical-align: middle;
@@ -189,4 +185,70 @@ button{
 
 .btn-secondary:active {
   filter: brightness(0.9);
+}
+
+.app-tooltip {
+  z-index: 1000;
+  margin: 0;
+  padding: 8px 12px;
+  background-color: var(--text-dark);
+  color: var(--bg-white);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.app-tooltip.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.app-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.app-tooltip[data-position="top"] .app-tooltip-arrow {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--text-dark);
+}
+
+.app-tooltip[data-position="bottom"] .app-tooltip-arrow {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid var(--text-dark);
+}
+
+.app-tooltip[data-position="left"] .app-tooltip-arrow {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid var(--text-dark);
+}
+
+.app-tooltip[data-position="right"] .app-tooltip-arrow {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-right: 4px solid var(--text-dark);
 }

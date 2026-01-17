@@ -14,7 +14,7 @@
       <span class="icon-settings"></span>
     </button>
     <!-- Botão minimizar -->
-    <button class="icon-button" (click)="onMinimizeClick()">
+    <button class="icon-button minimize" (click)="onMinimizeClick()">
       <span class="icon-minimize"></span>
     </button>
     <!-- Botão fechar -->
@@ -151,22 +151,30 @@
   <!-- Rodapé com status do sistema -->
   <section class="status-footer">
     <!-- Status: Importação Automática -->
-    <div class="status-item">
+    <div class="status-item"
+         appTooltip="Sincronização automática com PontoMais a cada 10 minutos"
+         tooltipPosition="top">
       <span class="status-label">Importação Automática</span>
       <span class="status-value success">10m</span>
     </div>
     <!-- Status: Alarme -->
-    <div class="status-item">
+    <div class="status-item"
+         appTooltip="Notificação sonora quando faltar tempo para o fim do expediente"
+         tooltipPosition="top">
       <span class="status-label">Alarme</span>
       <span class="status-value success">Ok</span>
     </div>
     <!-- Status: Notificação -->
-    <div class="status-item">
+    <div class="status-item"
+         appTooltip="Notificações do sistema para lembretes de ponto"
+         tooltipPosition="top">
       <span class="status-label">Notificação</span>
       <span class="status-value disabled">Desativada</span>
     </div>
     <!-- Status: Conexão com PontoMais -->
-    <div class="status-item">
+    <div class="status-item"
+         appTooltip="Status da conexão com o sistema PontoMais"
+         tooltipPosition="top">
       <span class="status-label">Conexão com PontoMais</span>
       <span class="status-value success">Ok</span>
     </div>

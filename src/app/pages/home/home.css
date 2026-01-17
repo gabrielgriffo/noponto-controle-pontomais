@@ -44,7 +44,17 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.icon-button:hover {
+.settings{
+  border-radius: 99px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.minimize:hover {
   background-color: rgba(0, 0, 0, 0.06);
   color: var(--bg-white);
 }
@@ -54,15 +64,8 @@
   color: var(--bg-white);
 }
 
-.settings{
-  border-radius: 99px;
-  width: 25px;
-  height: 25px;
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
-  margin-right: 5px;
+.settings:hover{
+  color: var(--bg-white);
 }
 
 /* Main Content */

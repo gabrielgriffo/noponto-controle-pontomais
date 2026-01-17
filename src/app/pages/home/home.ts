@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsModal } from '../settings-modal/settings-modal';
 import { FlipText } from '../../components/flip-text/flip-text';
+import { TooltipDirective } from '../../directives/tooltip.directive';
 import { TimeFormatPipe } from '../../pipes/time-format.pipe';
 import { TimeInputDirective } from '../../directives/time-input.directive';
 import { TimeCalculationService } from '../../services/time-calculation.service';
@@ -12,7 +13,7 @@ import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, SettingsModal, FlipText, TimeFormatPipe, TimeInputDirective],
+  imports: [CommonModule, SettingsModal, FlipText, TooltipDirective, TimeFormatPipe, TimeInputDirective],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
