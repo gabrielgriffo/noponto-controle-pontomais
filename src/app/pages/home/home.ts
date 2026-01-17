@@ -7,6 +7,7 @@ import { TimeInputDirective } from '../../directives/time-input.directive';
 import { TimeCalculationService } from '../../services/time-calculation.service';
 import { WindowService } from '../../services/window.service';
 import { TimeObject } from '../../models/time-object';
+import { TimeUtilsService } from '../../services/time-utils.service';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +36,7 @@ export class Home implements OnDestroy {
 
   constructor(
     private timeCalc: TimeCalculationService,
+    private timeUtils: TimeUtilsService,
     private windowService: WindowService
   ) {}
 
@@ -107,14 +109,9 @@ export class Home implements OnDestroy {
   }
 
   onImportClick(): void {
-    this.checkInInput.nativeElement.value = '01:00';
-    this.checkOutInput.nativeElement.value = '01:10';
-    this.checkIn2Input.nativeElement.value = '02:00';
-
-    
-    // this.checkInInput.nativeElement.value = '08:00';
-    // this.checkOutInput.nativeElement.value = '12:00';
-    // this.checkIn2Input.nativeElement.value = '13:00';
+    this.checkInInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
+    this.checkOutInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
+    this.checkIn2Input.nativeElement.value = this.timeUtils.formatTimeInput('13:00');
   }
 
   onSettingsClick(): void {
