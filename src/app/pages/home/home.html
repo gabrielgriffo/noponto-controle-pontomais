@@ -14,14 +14,16 @@
       <span class="icon-settings"></span>
     </button>
     <!-- Botão minimizar -->
-    <button class="icon-button minimize" (click)="onMinimizeClick()" 
+    <button class="icon-button minimize" (click)="onMinimizeClick()"
       tooltipPosition="bottom"
+      [tooltipDelay]="1000"
       appTooltip="Minimizar">
       <span class="icon-minimize"></span>
     </button>
     <!-- Botão fechar -->
     <button class="icon-button close" (click)="onCloseClick()"
       tooltipPosition="bottom"
+      [tooltipDelay]="1000"
       appTooltip="Fechar">
       <span class="icon-close"></span>
     </button>
@@ -41,7 +43,7 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput #checkInInput />
+              maxlength="5" appTimeInput #checkInInput (focus)="clearTimeErrors()" />
           </div>
         </div>
       </div>
@@ -51,17 +53,17 @@
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkOut" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput #checkOutInput />
+              maxlength="5" appTimeInput #checkOutInput (focus)="clearTimeErrors()" />
           </div>
         </div>
       </div>
-      <!-- Segunda Entrada -->
+      <!-- Segunda Entrada (Retorno) -->
       <div class="time-entry" [class.error]="checkIn2Error">
-        <label for="checkIn2" class="time-label">Entrada</label>
+        <label for="checkIn2" class="time-label">Retorno</label>
         <div class="time-input">
           <div class="form">
             <input class="input" id="checkIn2" placeholder="HH:MM" type="text" autocomplete="off"
-              maxlength="5" appTimeInput #checkIn2Input />
+              maxlength="5" appTimeInput #checkIn2Input (focus)="clearTimeErrors()" />
           </div>
         </div>
       </div>
@@ -70,14 +72,17 @@
     <!-- Botões de ação -->
     <div class="action-buttons">
       <!-- Botão de importar horários -->
-      <button class="btn-secondary" (click)="onImportClick()">
+      <button class="btn-secondary" (click)="onImportClick()" 
+      tooltipPosition="bottom"
+      [tooltipDelay]="1000"
+      appTooltip="Importar horários do PontoMais">
         Importar
         <span class="icon-download"></span>
       </button>
       <!-- Botão de iniciar monitoramento -->
       <button class="btn-primary" (click)="onStartMonitoringClick()">
         Iniciar Monitoramento
-        <span class="icon-bell"></span>
+        <span class="icon-play"></span>
       </button>
     </div>
   </section>
@@ -127,7 +132,7 @@
     </section>
 
     <!-- Métricas complementares -->
-    <section class="metrics-section">
+    <section class="metrics-comp-section">
       <div class="metrics-line">
         <!-- Cartão: Tempo Trabalhado -->
         <div class="metric-card">
@@ -158,28 +163,24 @@
     <div class="status-item"
          appTooltip="Sincronização automática com PontoMais a cada 10 minutos"
          tooltipPosition="top">
-      <span class="status-label">Importação Automática</span>
       <span class="status-value success">10m</span>
     </div>
     <!-- Status: Alarme -->
     <div class="status-item"
-         appTooltip="Notificação sonora quando faltar tempo para o fim do expediente Notificação sonora quando faltar tempo para o fim do expediente"
+         appTooltip="Notificação sonora quando chegar ao fim do expediente"
          tooltipPosition="top">
-      <span class="status-label">Alarme</span>
-      <span class="status-value success">Ok</span>
+      <span class="icon-bell status-value success"></span>
     </div>
     <!-- Status: Notificação -->
     <div class="status-item"
          appTooltip="Notificações do sistema para lembretes de ponto"
          tooltipPosition="top">
-      <span class="status-label">Notificação</span>
       <span class="status-value disabled">Desativada</span>
     </div>
     <!-- Status: Conexão com PontoMais -->
     <div class="status-item"
-         appTooltip="Status da conexão com o sistema PontoMais"
+         appTooltip="Status da conexão com o PontoMais"
          tooltipPosition="top">
-      <span class="status-label">Conexão com PontoMais</span>
       <span class="status-value success">Ok</span>
     </div>
   </section>

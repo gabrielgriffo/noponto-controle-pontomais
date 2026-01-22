@@ -27,6 +27,7 @@ import { TooltipComponent } from '../components/tooltip/tooltip';
 export class TooltipDirective implements OnDestroy {
   appTooltip = input<string>('');
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
+  tooltipDelay = input<number>(100);
 
   private elementRef = inject(ElementRef);
   private renderer = inject(Renderer2);
@@ -38,21 +39,21 @@ export class TooltipDirective implements OnDestroy {
   private tooltipRef: ComponentRef<TooltipComponent> | null = null;
   private showTimeout: ReturnType<typeof setTimeout> | null = null;
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
-  private tooltipId = `tooltip-${Math.random().toString(36).substring(2, 11)}`;
 
   constructor() {
-    // Acessibilidade: vincula tooltip ao elemento via ARIA
+    // Acessibilidade: adiciona descrição via aria-label para leitores de tela
     effect(() => {
-      if (this.appTooltip()) {
+      const text = this.appTooltip();
+      if (text) {
         this.renderer.setAttribute(
           this.elementRef.nativeElement,
-          'aria-describedby',
-          this.tooltipId
+          'aria-label',
+          text
         );
       } else {
         this.renderer.removeAttribute(
           this.elementRef.nativeElement,
-          'aria-describedby'
+          'aria-label'
         );
       }
     });
@@ -85,24 +86,12 @@ export class TooltipDirective implements OnDestroy {
     this.hide();
   }
 
-  // Suporte a navegação por teclado (Tab)
-  @HostListener('focusin')
-  onFocusIn(): void {
-    this.scheduleShow();
-  }
-
-  @HostListener('focusout')
-  onFocusOut(): void {
-    this.cancelShow();
-    this.hide();
-  }
-
   private scheduleShow(): void {
     if (!this.appTooltip()) return;
 
     this.showTimeout = setTimeout(() => {
       this.show();
-    }, 100);
+    }, this.tooltipDelay());
   }
 
   private cancelShow(): void {
@@ -165,7 +154,6 @@ export class TooltipDirective implements OnDestroy {
 
     this.tooltipRef.setInput('text', this.appTooltip());
     this.tooltipRef.setInput('position', this.tooltipPosition());
-    this.tooltipRef.setInput('tooltipId', this.tooltipId);
     this.tooltipRef.setInput('isVisible', false);
 
     // requestAnimationFrame: garante animação suave após DOM atualizar

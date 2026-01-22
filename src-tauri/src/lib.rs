@@ -41,8 +41,8 @@ pub fn run() {
             // Configura propriedades da janela
             window.set_title("No Ponto")?;
             window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
-                width: 420,
-                height: 588,
+                width: 393,
+                height: 506,
             }))?;
             window.set_decorations(false)?;
             window.set_resizable(false)?;

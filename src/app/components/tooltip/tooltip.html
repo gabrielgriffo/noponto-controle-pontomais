@@ -2,8 +2,7 @@
   class="app-tooltip"
   [class.visible]="isVisible()"
   [attr.data-position]="position()"
-  [attr.role]="'tooltip'"
-  [attr.id]="tooltipId()">
+  [attr.role]="'tooltip'">
   <div class="app-tooltip-arrow" [style.left]="arrowLeft()"></div>
   <div class="app-tooltip-text">{{ text() }}</div>
 </div>

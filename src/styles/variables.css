@@ -1,0 +1,18 @@
+:root {
+  --bg-light: #f4f5f4;
+  --bg-white: #fcfcfc;
+  --primary-green: #00be00;
+  --primary-green-light: #00d100;
+  --warning-yellow: #fcd34d;
+  --warning-yellow-light: #ffe693;
+  --border-gray: #e0ddd8;
+  --border-gray-light: #eff1f3;
+  --button-red: #e81123;
+  --opt-disabled: #bdbdbd;
+  --text-dark: #31353F;
+  --text-placeholder: #d1d5db;
+  --gray-medium: #7C7F82;
+  --gray-placeholder: #C3C4C3;
+  --transition-default: 0.5s ease;
+  --error: #ff3b30;
+}

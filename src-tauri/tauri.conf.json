@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "No Ponto",
-        "width": 420,
-        "height": 588,
+        "width": 393,
+        "height": 506,
         "decorations": false,
         "visible": false,
         "resizable": false,

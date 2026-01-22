@@ -19,7 +19,7 @@ import {
 })
 export class FlipText implements OnChanges, AfterViewInit {
   @Input() text = '';
-  @Input() fontSize: number = 48; // Tamanho da fonte em pixels
+  @Input() fontSize: number = 42; // Tamanho da fonte em pixels
   @Input() grayPrefix?: string; // Prefixo opcional para aplicar cor cinza (ex: '00h')
 
   @ViewChild('flipContainer', { static: false }) flipContainer!: ElementRef<HTMLDivElement>;

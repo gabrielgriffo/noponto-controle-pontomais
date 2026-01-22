@@ -92,15 +92,22 @@ export class TimeCalculationService {
 
     // Cenário A: Apenas entrada preenchida
     if (checkInMinutes && !checkOutMinutes && !checkIn2Minutes) {
-      firstPeriod = this.calculateTimeDifference(checkInMinutes, currentMinutes);
-      totalWorkedMinutes = firstPeriod;
-      remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
+      if (currentMinutes >= checkInMinutes) {
+        firstPeriod = this.calculateTimeDifference(checkInMinutes, currentMinutes);
+        totalWorkedMinutes = firstPeriod;
+        remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
 
-      if (totalWorkedMinutes >= targetJourneyMinutes) {
-        // Já completou 8h: fim fixo
-        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+        if (totalWorkedMinutes >= targetJourneyMinutes) {
+          // Já completou 8h: fim fixo
+          endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+        } else {
+          endTimeMinutes = currentMinutes + remainingMinutes;
+        }
       } else {
-        endTimeMinutes = currentMinutes + remainingMinutes;
+        firstPeriod = 0;
+        totalWorkedMinutes = 0;
+        remainingMinutes = targetJourneyMinutes;
+        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
       }
     }
     // Cenário B: Entrada e saída preenchidos, sem retorno

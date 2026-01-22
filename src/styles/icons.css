@@ -1,0 +1,75 @@
+
+.i {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-settings {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: url('/assets/icons/gear.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/gear.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-foco {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/icon-foco.ico') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/icon-foco.ico') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-close {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/x-bold.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/x-bold.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-minimize {
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: url('/assets/icons/minus-bold.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/minus-bold.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-download {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: url('/assets/icons/import.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/import.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-bell {
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  mask: url('/assets/icons/clock-icon.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/clock-icon.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}
+
+.icon-play {
+  width: 19px;
+  height: 19px;
+  background-color: currentColor;
+  mask: url('/assets/icons/play.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask: url('/assets/icons/play.svg') no-repeat center;
+  -webkit-mask-size: contain;
+}

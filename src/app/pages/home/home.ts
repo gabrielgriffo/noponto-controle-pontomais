@@ -10,6 +10,7 @@ import { WindowService } from '../../services/window.service';
 import { TimeObject } from '../../models/time-object';
 import { TimeUtilsService } from '../../services/time-utils.service';
 import { ToastService } from '../../services/toast.service';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -39,13 +40,14 @@ export class Home implements OnDestroy {
   private capturedCheckIn: string = '';
   private capturedCheckOut: string = '';
   private capturedCheckIn2: string = '';
+  private errorTimerSub?: Subscription;
 
   constructor(
     private timeCalc: TimeCalculationService,
     private timeUtils: TimeUtilsService,
     private windowService: WindowService,
     private toastService: ToastService
-  ) {}
+  ) { }
 
   updateWorkTime(): void {
     const result = this.timeCalc.calculateWorkTime(
@@ -98,10 +100,36 @@ export class Home implements OnDestroy {
     const [hours, minutes] = time.split(':').map(Number);
     if (isNaN(hours) || isNaN(minutes)) return -1;
     return hours * 60 + minutes;
-  }  
+  }
+
+  showError() {
+    this.checkInError = true;
+
+    // Cancela timer anterior
+    this.errorTimerSub?.unsubscribe();
+
+    this.errorTimerSub = timer(3000).subscribe(() => {
+      this.clearTimeErrors();
+    });
+  }
+
+  clearTimeErrors(): void {
+    this.checkInError = false;
+    this.checkOutError = false;
+    this.checkIn2Error = false;
+
+    if (this.errorTimerSub) {
+      this.errorTimerSub.unsubscribe();
+      this.errorTimerSub = undefined;
+    }
+  }
+
+  onInputFocus() {
+    this.clearTimeErrors();
+  }
 
   /**
-   * Valida os horários verificando se cada um é maior que o anterior
+   * Valida os horários verificando seguindo regras específicas
    */
   validateTimeInputs(): void {
     const checkIn = this.checkInInput?.nativeElement.value || '';
@@ -112,20 +140,96 @@ export class Home implements OnDestroy {
     const checkOutMinutes = this.timeToMinutes(checkOut);
     const checkIn2Minutes = this.timeToMinutes(checkIn2);
 
+    this.clearTimeErrors();
+
+    const errors: Array<{ field: 'checkIn' | 'checkOut' | 'checkIn2'; message: string }> = [];
+
+    // FASE 1: Validar formato dos campos preenchidos
+    if (checkIn.length > 0 && checkInMinutes === -1) {
+      errors.push({ field: 'checkIn', message: 'Formato de horário de entrada inválido' });
+    }
+
+    if (checkOut.length > 0 && checkOutMinutes === -1) {
+      errors.push({ field: 'checkOut', message: 'Formato de horário de saída inválido' });
+    }
+
+    if (checkIn2.length > 0 && checkIn2Minutes === -1) {
+      errors.push({ field: 'checkIn2', message: 'Formato de horário de retorno inválido' });
+    }
+
+    // Se houver erros de formato, para aqui e não valida regras de negócio
+    if (errors.length > 0) {
+      errors.forEach(error => {
+        if (error.field === 'checkIn') this.checkInError = true;
+        if (error.field === 'checkOut') this.checkOutError = true;
+        if (error.field === 'checkIn2') this.checkIn2Error = true;
+      });
+
+      if (errors.length === 1) {
+        this.toastService.error(errors[0].message, 3000);
+      } else if (errors.length > 1) {
+        this.toastService.error('Horários informados com erro', 3000);
+      }
+
+      this.errorTimerSub = timer(3000).subscribe(() => {
+        this.clearTimeErrors();
+      });
+
+      return;
+    }
+
+    // FASE 2: Validar regras de negócio (só executa se todos os campos preenchidos são válidos)
+
+    // Validações de dependência (quando campos posteriores estão preenchidos)
+    if (checkOutMinutes !== -1 && checkInMinutes === -1) {
+      errors.push({ field: 'checkIn', message: 'Horário de entrada não informado' });
+    }
+
+    if (checkIn2Minutes !== -1 && checkInMinutes === -1 && checkOutMinutes === -1) {
+      errors.push({ field: 'checkIn', message: 'Horários de entrada e saída não informados' });
+      errors.push({ field: 'checkOut', message: 'Horários de entrada e saída não informados' });
+    } else if (checkIn2Minutes !== -1 && checkInMinutes === -1) {
+      errors.push({ field: 'checkIn', message: 'Horário de entrada não informado' });
+    } else if (checkIn2Minutes !== -1 && checkOutMinutes === -1) {
+      errors.push({ field: 'checkOut', message: 'Horário de saída não informado' });
+    }
+
+    // Validação de campo obrigatório (só verifica se nenhum campo posterior está preenchido)
+    if (checkIn.length === 0 && checkOut.length === 0 && checkIn2.length === 0) {
+      errors.push({ field: 'checkIn', message: 'Horário de entrada não informado' });
+    }
+
     if (checkOutMinutes !== -1 && checkInMinutes !== -1 && checkOutMinutes < checkInMinutes) {
-      this.checkOutError = true;
-      this.toastService.error('Horário de saída não pode ser menor que o horário de entrada', 3000);
+      errors.push({ field: 'checkOut', message: 'Horário de saída anterior ao de entrada' });
     }
 
     if (checkIn2Minutes !== -1 && checkOutMinutes !== -1 && checkIn2Minutes < checkOutMinutes) {
-      this.checkIn2Error = true;
-      this.toastService.error('Horário de retorno não pode ser menor que o horário de saída', 3000);
+      errors.push({ field: 'checkIn2', message: 'Horário de retorno anterior ao de saída' });
     }
 
-    setTimeout(() => {
-      this.checkOutError = false;
-      this.checkIn2Error = false;
-    }, 3000);
+    errors.forEach(error => {
+      if (error.field === 'checkIn') this.checkInError = true;
+      if (error.field === 'checkOut') this.checkOutError = true;
+      if (error.field === 'checkIn2') this.checkIn2Error = true;
+    });
+
+    if (errors.length === 1) {
+      this.toastService.error(errors[0].message, 3000);
+    } else if (errors.length > 1) {
+      const uniqueMessages = new Set(errors.map(e => e.message));
+      if (uniqueMessages.size === 1) {
+        // Todos os erros têm a mesma mensagem, mostra ela
+        this.toastService.error(errors[0].message, 3000);
+      } else {
+        this.toastService.error('Horários informados com erro', 3000);
+      }
+    }
+
+    if (errors.length > 0) {
+      this.errorTimerSub = timer(3000).subscribe(() => {
+        this.clearTimeErrors();
+      });
+    }
   }
 
   async onMinimizeClick(): Promise<void> {
@@ -140,7 +244,7 @@ export class Home implements OnDestroy {
 
     this.validateTimeInputs();
 
-    if (!this.checkOutError && !this.checkIn2Error) {
+    if (!this.checkInError && !this.checkOutError && !this.checkIn2Error) {
       this.capturedCheckIn = this.checkInInput.nativeElement.value;
       this.capturedCheckOut = this.checkOutInput.nativeElement.value;
       this.capturedCheckIn2 = this.checkIn2Input.nativeElement.value;
