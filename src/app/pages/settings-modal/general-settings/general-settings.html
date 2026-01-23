@@ -1,0 +1,46 @@
+<div class="tab-content">
+  <!-- Importação Automática -->
+  <div class="setting-item">
+    <div class="setting-header">
+      <span class="setting-label">Importação Automática</span>
+      <app-toggle-switch
+        [checked]="settings.autoImportEnabled"
+        (checkedChange)="settings.autoImportEnabled = $event; onToggleChange()"
+      ></app-toggle-switch>
+    </div>
+  </div>
+
+  <!-- Intervalo -->
+  <div class="setting-item" *ngIf="settings.autoImportEnabled">
+    <div class="setting-content">
+      <label class="input-label">Intervalo</label>
+      <app-custom-select
+        [options]="intervalOptions"
+        [(value)]="settings.autoImportInterval"
+        (valueChange)="onIntervalChange()">
+      </app-custom-select>
+    </div>
+  </div>
+
+  <!-- Alarme -->
+  <div class="setting-item">
+    <div class="setting-header">
+      <span class="setting-label">Alarme</span>
+      <app-toggle-switch
+        [checked]="settings.alarmEnabled"
+        (checkedChange)="settings.alarmEnabled = $event; onToggleChange()"
+      ></app-toggle-switch>
+    </div>
+  </div>
+
+  <!-- Notificação -->
+  <div class="setting-item">
+    <div class="setting-header">
+      <span class="setting-label">Notificação</span>
+      <app-toggle-switch
+        [checked]="settings.notificationEnabled"
+        (checkedChange)="settings.notificationEnabled = $event; onToggleChange()"
+      ></app-toggle-switch>
+    </div>
+  </div>
+</div>

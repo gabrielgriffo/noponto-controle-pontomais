@@ -1,0 +1,39 @@
+<div class="tab-content">
+  <div class="setting-section">
+    <h3 class="section-title">Credenciais PontoMais</h3>
+
+    <div class="input-group">
+      <label class="input-label">Login/Email</label>
+      <input
+        id="login"
+        type="text"
+        class="text-input"
+        spellcheck="false"
+        autocorrect="off"
+        autocapitalize="off"
+        placeholder="seu.email@exemplo.com"
+        [(ngModel)]="settings.pontomaisLogin"
+      />
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Senha</label>
+      <input
+        id="password"
+        type="password"
+        class="text-input"
+        placeholder="••••••••"
+        [(ngModel)]="settings.pontomaisPassword"
+      />
+    </div>
+    <br>
+    <div class="action-buttons">
+      <button class="btn-secondary" (click)="onLogout()">
+        Sair
+      </button>
+      <button class="btn-primary" (click)="onSaveCredentials()">
+        Logar com PontoMais
+      </button>
+    </div>
+  </div>
+</div>

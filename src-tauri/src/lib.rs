@@ -6,6 +6,7 @@ use tauri::{
 use tauri_plugin_window_state::{StateFlags, WindowExt};
 
 mod settings;
+mod app_info;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -105,7 +106,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             settings::save_settings,
-            settings::load_settings
+            settings::load_settings,
+            app_info::get_app_info
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

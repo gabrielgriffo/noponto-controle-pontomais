@@ -1,4 +1,3 @@
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -68,7 +67,10 @@
   color: var(--bg-white);
 }
 
-/* Main Content */
+.settings:active{
+  filter: brightness(0.95);
+}
+
 .main-content {
   padding: 0;
   gap: 20px;
@@ -76,7 +78,6 @@
   flex-direction: column;
 }
 
-/* Divider */
 .divider {
   margin: 0;
   align-self: center;
@@ -92,7 +93,6 @@
   border-image-slice: 1;
 }
 
-/* Time Actions */
 .time-actions {
   background-color: var(--bg-light);
   padding: 20px;
@@ -233,7 +233,6 @@ input:focus {
   transform: scale(1);
 }
 
-/* Action Buttons */
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -250,7 +249,6 @@ input:focus {
   max-width: 111px;
 }
 
-/* Metrics Container */
 .metrics-container {
   position: relative;
   display: flex;
@@ -258,7 +256,6 @@ input:focus {
   gap: 20px;
 }
 
-/* Section Grid */
 .metrics-section {
   padding: 0 20px 0 20px;
   display: flex;
@@ -311,7 +308,6 @@ input:focus {
   align-items: center;
   gap: 4px;
 }
-
 
 .metric-label {
   font-size: 12px;
@@ -401,7 +397,6 @@ input:focus {
   }
 }
 
-/* Work Periods */
 .work-periods {
   padding: 0 20px;
   margin-top: -10px;
@@ -477,12 +472,10 @@ input:focus {
   text-align: center;
 }
 
-/* Status Footer */
 .status-footer {
   padding: 0 5px;
   display: flex;
   flex-direction: row-reverse;
-  /* border-top: 1px solid var(--border-gray-light); */
   background-color: var(--bg-light);
 }
 
@@ -586,7 +579,6 @@ input:focus {
   }
 }
 
-/* Metrics Empty State */
 .metrics-empty-state {
   position: absolute;
   top: 0;

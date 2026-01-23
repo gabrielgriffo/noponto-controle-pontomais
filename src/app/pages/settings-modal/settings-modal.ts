@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ToggleSwitch } from '../../components/toggle-switch/toggle-switch';
+import { Tabs } from '../../components/tabs/tabs';
+import { GeneralSettingsComponent } from './general-settings/general-settings';
+import { IntegrationSettingsComponent } from './integration-settings/integration-settings';
+import { AboutSettingsComponent } from './about-settings/about-settings';
 import { invoke } from '@tauri-apps/api/core';
 import { ToastService } from '../../services/toast.service';
 
@@ -14,15 +16,36 @@ interface Settings {
   pontomaisPassword: string;
 }
 
+interface AppInfo {
+  version: string;
+  product_name: string;
+  tauri_version: string;
+  architecture: string;
+  os_platform: string;
+  build_type: string;
+}
+
 @Component({
   selector: 'app-settings-modal',
-  imports: [CommonModule, FormsModule, ToggleSwitch],
+  imports: [CommonModule, Tabs, GeneralSettingsComponent, IntegrationSettingsComponent, AboutSettingsComponent],
   templateUrl: './settings-modal.html',
   styleUrl: './settings-modal.css',
 })
-export class SettingsModal implements OnInit {
+export class SettingsModal implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Output() close = new EventEmitter<void>();
+
+  activeTabIndex: number = 0;
+  tabLabels: string[] = ['Geral', 'Integração', 'Sobre'];
+
+  appInfo: AppInfo = {
+    version: '',
+    product_name: '',
+    tauri_version: '',
+    architecture: '',
+    os_platform: '',
+    build_type: ''
+  };
 
   settings: Settings = {
     autoImportEnabled: false,
@@ -44,6 +67,13 @@ export class SettingsModal implements OnInit {
 
   async ngOnInit() {
     await this.loadSettings();
+    await this.loadAppInfo();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
+      this.activeTabIndex = 0;
+    }
   }
 
   async loadSettings() {
@@ -55,20 +85,21 @@ export class SettingsModal implements OnInit {
     }
   }
 
+  async loadAppInfo() {
+    try {
+      const info = await invoke<AppInfo>('get_app_info');
+      this.appInfo = info;
+    } catch (error) {
+      console.error('Erro ao carregar informações do app:', error);
+    }
+  }
+
   async saveSettings() {
     try {
       await invoke('save_settings', { settings: this.settings });
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
     }
-  }
-
-  async onToggleChange() {
-    await this.saveSettings();
-  }
-
-  async onIntervalChange() {
-    await this.saveSettings();
   }
 
   async onSaveCredentials() {
@@ -84,6 +115,11 @@ export class SettingsModal implements OnInit {
       console.error('Erro ao salvar credenciais:', error);
       this.toastService.error('Erro ao salvar credenciais');
     }
+  }
+
+  onLogout() {
+    // TODO: Implementar logout
+    console.log('Logout');
   }
 
   onClose() {
