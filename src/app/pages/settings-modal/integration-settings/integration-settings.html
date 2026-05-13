@@ -1,6 +1,14 @@
 <div class="tab-content">
   <div class="setting-section">
-    <h3 class="section-title">Credenciais PontoMais</h3>
+    <div class="section-header">
+      <h3 class="section-title">Credenciais PontoMais</h3>
+      <span class="status-badge" *ngIf="settings.isLoggedIn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="8"/>
+          <path d="M11.5 5.5L6.75 10.25L4.5 8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </div>
 
     <div class="input-group">
       <label class="input-label">Login/Email</label>
@@ -11,8 +19,10 @@
         spellcheck="false"
         autocorrect="off"
         autocapitalize="off"
+        autocomplete="off"
         placeholder="seu.email@exemplo.com"
         [(ngModel)]="settings.pontomaisLogin"
+        [readonly]="settings.isLoggedIn"
       />
     </div>
 
@@ -22,17 +32,22 @@
         id="password"
         type="password"
         class="text-input"
+        autocomplete="new-password"
         placeholder="••••••••"
         [(ngModel)]="settings.pontomaisPassword"
+        [readonly]="settings.isLoggedIn"
       />
     </div>
-    <br>
     <div class="action-buttons">
-      <button class="btn-secondary" (click)="onLogout()">
+      <button class="btn-secondary" [disabled]="!settings.isLoggedIn" (click)="onLogout()">
         Sair
       </button>
-      <button class="btn-primary" (click)="onSaveCredentials()">
-        Logar com PontoMais
+      <button
+        class="btn-primary"
+        (click)="onSaveCredentials()"
+        [disabled]="isLoggingIn || settings.isLoggedIn">
+        <span *ngIf="!isLoggingIn">Logar com PontoMais</span>
+        <span *ngIf="isLoggingIn">Entrando...</span>
       </button>
     </div>
   </div>

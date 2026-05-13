@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 export interface IntegrationSettings {
   pontomaisLogin: string;
   pontomaisPassword: string;
+  isLoggedIn: boolean;
 }
 
 @Component({
@@ -15,6 +16,7 @@ export interface IntegrationSettings {
 })
 export class IntegrationSettingsComponent {
   @Input() settings!: IntegrationSettings;
+  @Input() isLoggingIn: boolean = false;
   @Output() saveCredentials = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
 

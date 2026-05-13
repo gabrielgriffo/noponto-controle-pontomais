@@ -72,10 +72,12 @@
     <!-- Botões de ação -->
     <div class="action-buttons">
       <!-- Botão de importar horários -->
-      <button class="btn-secondary" (click)="onImportClick()" 
+      <button class="btn-secondary"
+      (click)="onImportClick()"
+      [disabled]="!isPontomaisLoggedIn"
       tooltipPosition="bottom"
-      [tooltipDelay]="1000"
-      appTooltip="Importar horários do PontoMais">
+      [tooltipDelay]="500"
+      [appTooltip]="isPontomaisLoggedIn ? '' : 'Nenhuma integração configurada'">
         Importar
         <span class="icon-download"></span>
       </button>

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsModal } from '../settings-modal/settings-modal';
 import { FlipText } from '../../components/flip-text/flip-text';
@@ -10,6 +10,8 @@ import { WindowService } from '../../services/window.service';
 import { TimeObject } from '../../models/time-object';
 import { TimeUtilsService } from '../../services/time-utils.service';
 import { ToastService } from '../../services/toast.service';
+import { PontoMaisService } from '../../services/pontomais.service';
+import { StrongholdService } from '../../services/stronghold.service';
 import { Subscription, timer } from 'rxjs';
 
 @Component({
@@ -18,9 +20,10 @@ import { Subscription, timer } from 'rxjs';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnDestroy {
+export class Home implements OnInit, OnDestroy {
   showSettingsModal = false;
   isMonitoring = false;
+  isPontomaisLoggedIn = false;
 
   @ViewChild('checkInInput') checkInInput!: ElementRef<HTMLInputElement>;
   @ViewChild('checkOutInput') checkOutInput!: ElementRef<HTMLInputElement>;
@@ -46,8 +49,32 @@ export class Home implements OnDestroy {
     private timeCalc: TimeCalculationService,
     private timeUtils: TimeUtilsService,
     private windowService: WindowService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private pontoMaisService: PontoMaisService,
+    private strongholdService: StrongholdService
   ) { }
+
+  async ngOnInit() {
+    // Verificar se está logado no PontoMais e restaurar sessão no backend
+    const token = await this.strongholdService.getToken();
+    if (token) {
+      try {
+        // Restaurar sessão no backend Rust
+        await this.pontoMaisService.restoreSession(
+          token.token,
+          token.client_id,
+          token.expiry,
+          token.uid
+        );
+        this.isPontomaisLoggedIn = true;
+      } catch (error) {
+        console.error('Erro ao restaurar sessão:', error);
+        this.isPontomaisLoggedIn = false;
+      }
+    } else {
+      this.isPontomaisLoggedIn = false;
+    }
+  }
 
   updateWorkTime(): void {
     const result = this.timeCalc.calculateWorkTime(
@@ -264,18 +291,69 @@ export class Home implements OnDestroy {
     }
   }
 
-  onImportClick(): void {
-    this.checkInInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
-    this.checkOutInput.nativeElement.value = this.timeUtils.formatTimeInput('12:00');
-    this.checkIn2Input.nativeElement.value = this.timeUtils.formatTimeInput('11:00');
+  async onImportClick(): Promise<void> {
+    try {
+      // 1. Verificar se está logado (verificar token no Stronghold)
+      const hasToken = await this.strongholdService.hasToken();
+
+      if (!hasToken) {
+        this.toastService.error('Configure uma integração nas configurações para importar', 3000);
+        return;
+      }
+
+      // 2. Buscar horários do dia atual
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const workDay = await this.pontoMaisService.getCurrentWorkDay(today);
+
+      // 3. Se não há registros
+      if (!workDay?.work_days?.[0]?.time_cards?.length) {
+        this.toastService.error('Nenhum registro encontrado para hoje', 3000);
+        return;
+      }
+
+      // 4. Extrair horários e formatar usando timeUtils.formatTimeInput()
+      const cards = workDay.work_days[0].time_cards;
+      let importedCount = 0;
+
+      if (cards[0]) {
+        this.checkInInput.nativeElement.value =
+          this.timeUtils.formatTimeInput(cards[0].time);
+        importedCount++;
+      }
+
+      if (cards[1]) {
+        this.checkOutInput.nativeElement.value =
+          this.timeUtils.formatTimeInput(cards[1].time);
+        importedCount++;
+      }
+
+      if (cards[2]) {
+        this.checkIn2Input.nativeElement.value =
+          this.timeUtils.formatTimeInput(cards[2].time);
+        importedCount++;
+      }
+
+      this.toastService.success('Horários importados com sucesso!');
+
+      // 5. Se importou pelo menos 1 horário, iniciar monitoramento automaticamente
+      if (importedCount > 0) {
+        this.onStartMonitoringClick();
+      }
+
+    } catch (error) {
+      console.error('Erro ao importar:', error);
+      this.toastService.error('Erro ao importar horários', 3000);
+    }
   }
 
   onSettingsClick(): void {
     this.showSettingsModal = true;
   }
 
-  onCloseSettingsModal(): void {
+  async onCloseSettingsModal(): Promise<void> {
     this.showSettingsModal = false;
+    // Recarregar status de login ao fechar o modal
+    this.isPontomaisLoggedIn = await this.strongholdService.hasToken();
   }
 
   ngOnDestroy(): void {

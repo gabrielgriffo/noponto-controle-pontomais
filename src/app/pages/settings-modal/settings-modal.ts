@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tabs } from '../../components/tabs/tabs';
 import { GeneralSettingsComponent } from './general-settings/general-settings';
@@ -6,6 +6,8 @@ import { IntegrationSettingsComponent } from './integration-settings/integration
 import { AboutSettingsComponent } from './about-settings/about-settings';
 import { invoke } from '@tauri-apps/api/core';
 import { ToastService } from '../../services/toast.service';
+import { PontoMaisService } from '../../services/pontomais.service';
+import { StrongholdService } from '../../services/stronghold.service';
 
 interface Settings {
   autoImportEnabled: boolean;
@@ -13,7 +15,7 @@ interface Settings {
   alarmEnabled: boolean;
   notificationEnabled: boolean;
   pontomaisLogin: string;
-  pontomaisPassword: string;
+  isPontomaisLoggedIn: boolean;
 }
 
 interface AppInfo {
@@ -34,6 +36,7 @@ interface AppInfo {
 export class SettingsModal implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Output() close = new EventEmitter<void>();
+  @ViewChild('modalContainer') modalContainer?: ElementRef<HTMLDivElement>;
 
   activeTabIndex: number = 0;
   tabLabels: string[] = ['Geral', 'Integração', 'Sobre'];
@@ -53,8 +56,16 @@ export class SettingsModal implements OnInit, OnChanges {
     alarmEnabled: false,
     notificationEnabled: false,
     pontomaisLogin: '',
-    pontomaisPassword: ''
+    isPontomaisLoggedIn: false
   };
+
+  integrationSettings = {
+    pontomaisLogin: '',
+    pontomaisPassword: '',
+    isLoggedIn: false
+  };
+
+  isLoggingIn = false;
 
   intervalOptions = [
     { value: 10, label: '10 minutos' },
@@ -63,16 +74,27 @@ export class SettingsModal implements OnInit, OnChanges {
     { value: 60, label: '1 hora' }
   ];
 
-  constructor(private toastService: ToastService) {}
+  constructor(
+    private toastService: ToastService,
+    private pontoMaisService: PontoMaisService,
+    private strongholdService: StrongholdService
+  ) {}
 
   async ngOnInit() {
-    await this.loadSettings();
     await this.loadAppInfo();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
       this.activeTabIndex = 0;
+
+      // Carregar settings ao abrir o modal
+      await this.loadSettings();
+
+      // Remover foco do botão de fechar ao abrir o modal
+      setTimeout(() => {
+        this.modalContainer?.nativeElement.focus();
+      }, 0);
     }
   }
 
@@ -80,6 +102,51 @@ export class SettingsModal implements OnInit, OnChanges {
     try {
       const loadedSettings = await invoke<Settings>('load_settings');
       this.settings = loadedSettings;
+
+      // SEMPRE verificar o Stronghold como fonte da verdade
+      const token = await this.strongholdService.getToken();
+
+      if (token) {
+        // Token existe no Stronghold
+        try {
+          // Restaurar sessão no backend Rust
+          await this.pontoMaisService.restoreSession(
+            token.token,
+            token.client_id,
+            token.expiry,
+            token.uid
+          );
+
+          // Atualizar TODOS os estados como logado
+          this.integrationSettings.isLoggedIn = true;
+          this.settings.isPontomaisLoggedIn = true;
+
+          // Se o settings.json não tinha o login salvo, atualizar
+          if (!loadedSettings.isPontomaisLoggedIn) {
+            await this.saveSettings();
+          }
+        } catch (error) {
+          console.error('Erro ao restaurar sessão no modal:', error);
+          // Se falhar ao restaurar, marcar como não logado
+          this.integrationSettings.isLoggedIn = false;
+          this.settings.isPontomaisLoggedIn = false;
+          await this.saveSettings();
+        }
+      } else {
+        // Token não existe no Stronghold
+        this.integrationSettings.isLoggedIn = false;
+        this.settings.isPontomaisLoggedIn = false;
+
+        // Se o settings.json tinha marcado como logado, corrigir
+        if (loadedSettings.isPontomaisLoggedIn) {
+          await this.saveSettings();
+        }
+      }
+
+      // Atualizar dados de integração
+      this.integrationSettings.pontomaisLogin = this.settings.pontomaisLogin;
+      this.integrationSettings.pontomaisPassword = '';
+
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
     }
@@ -103,23 +170,68 @@ export class SettingsModal implements OnInit, OnChanges {
   }
 
   async onSaveCredentials() {
-    if (!this.settings.pontomaisLogin || !this.settings.pontomaisPassword) {
+    if (!this.integrationSettings.pontomaisLogin || !this.integrationSettings.pontomaisPassword) {
       this.toastService.error('Preencha login e senha', 3000);
       return;
     }
 
+    this.isLoggingIn = true;
+
     try {
+      // Tentar autenticar
+      const authResponse = await this.pontoMaisService.authenticate({
+        username: this.integrationSettings.pontomaisLogin,
+        password: this.integrationSettings.pontomaisPassword
+      });
+
+      // Salvar token no Stronghold
+      await this.strongholdService.saveToken({
+        token: authResponse.token,
+        client_id: authResponse.client_id,
+        expiry: authResponse.expiry,
+        uid: authResponse.uid
+      });
+
+      // Atualizar settings
+      this.settings.pontomaisLogin = this.integrationSettings.pontomaisLogin;
+      this.settings.isPontomaisLoggedIn = true;
+
+      // LIMPAR senha da memória
+      this.integrationSettings.pontomaisPassword = '';
+
+      // Atualizar UI
+      this.integrationSettings.isLoggedIn = true;
+
+      // Salvar settings
       await this.saveSettings();
-      this.toastService.success('Credenciais salvas com sucesso!');
+
+      this.toastService.success('Login efetuado com sucesso!');
     } catch (error) {
-      console.error('Erro ao salvar credenciais:', error);
-      this.toastService.error('Erro ao salvar credenciais');
+      console.error('Erro ao fazer login:', error);
+      this.toastService.error('Erro ao fazer login. Verifique suas credenciais.');
+    } finally {
+      this.isLoggingIn = false;
     }
   }
 
-  onLogout() {
-    // TODO: Implementar logout
-    console.log('Logout');
+  async onLogout() {
+    try {
+      // Remover token do Stronghold
+      await this.strongholdService.deleteToken();
+
+      // Atualizar settings
+      this.settings.isPontomaisLoggedIn = false;
+      this.integrationSettings.isLoggedIn = false;
+      this.integrationSettings.pontomaisPassword = '';
+
+      // Salvar settings
+      await this.saveSettings();
+
+      this.toastService.success('Logout efetuado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      this.toastService.error('Erro ao fazer logout');
+    }
   }
 
   onClose() {

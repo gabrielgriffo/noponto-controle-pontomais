@@ -4,14 +4,14 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", default)]
 pub struct Settings {
     pub auto_import_enabled: bool,
     pub auto_import_interval: u32,
     pub alarm_enabled: bool,
     pub notification_enabled: bool,
     pub pontomais_login: String,
-    pub pontomais_password: String,
+    pub is_pontomais_logged_in: bool,
 }
 
 impl Default for Settings {
@@ -22,7 +22,7 @@ impl Default for Settings {
             alarm_enabled: false,
             notification_enabled: false,
             pontomais_login: String::new(),
-            pontomais_password: String::new(),
+            is_pontomais_logged_in: false,
         }
     }
 }
@@ -47,8 +47,7 @@ pub fn save_settings(app: AppHandle, settings: Settings) -> Result<(), String> {
     let json = serde_json::to_string_pretty(&settings)
         .map_err(|e| format!("Failed to serialize settings: {}", e))?;
 
-    fs::write(&settings_path, json)
-        .map_err(|e| format!("Failed to write settings file: {}", e))?;
+    fs::write(&settings_path, json).map_err(|e| format!("Failed to write settings file: {}", e))?;
 
     Ok(())
 }
@@ -65,8 +64,8 @@ pub fn load_settings(app: AppHandle) -> Result<Settings, String> {
     let json = fs::read_to_string(&settings_path)
         .map_err(|e| format!("Failed to read settings file: {}", e))?;
 
-    let settings: Settings = serde_json::from_str(&json)
-        .map_err(|e| format!("Failed to parse settings: {}", e))?;
+    let settings: Settings =
+        serde_json::from_str(&json).map_err(|e| format!("Failed to parse settings: {}", e))?;
 
     Ok(settings)
 }

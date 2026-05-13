@@ -25,12 +25,14 @@ pub fn get_app_info() -> AppInfo {
         "x86"
     } else {
         "unknown"
-    }.to_string();
+    }
+    .to_string();
 
     // Detecta plataforma do OS de forma mais limpa
     let os_platform = if cfg!(target_os = "windows") {
         let family = std::env::consts::FAMILY; // "windows"
-        format!("{} {}",
+        format!(
+            "{} {}",
             family.chars().next().unwrap().to_uppercase().to_string() + &family[1..],
             std::env::consts::ARCH
         )
@@ -47,7 +49,8 @@ pub fn get_app_info() -> AppInfo {
         "Debug"
     } else {
         "Release"
-    }.to_string();
+    }
+    .to_string();
 
     AppInfo {
         version,

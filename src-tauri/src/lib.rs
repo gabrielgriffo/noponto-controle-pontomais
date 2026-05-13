@@ -1,3 +1,6 @@
+use argon2::{hash_raw, Config, Variant, Version};
+use pontomais::PontoMaisState;
+use std::sync::Mutex;
 use tauri::Manager;
 use tauri::{
     menu::{Menu, MenuItem},
@@ -5,8 +8,9 @@ use tauri::{
 };
 use tauri_plugin_window_state::{StateFlags, WindowExt};
 
-mod settings;
 mod app_info;
+mod pontomais;
+mod settings;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -17,6 +21,27 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(Mutex::new(PontoMaisState::new()))
+        .plugin(
+            tauri_plugin_stronghold::Builder::new(|password| {
+                let config = Config {
+                    lanes: 4,
+                    mem_cost: 10_000,
+                    time_cost: 10,
+                    variant: Variant::Argon2id,
+                    version: Version::Version13,
+                    ..Default::default()
+                };
+
+                // Salt único para a aplicação NoPonto
+                let salt = "noponto-controle-ponto-v1".as_bytes();
+
+                hash_raw(password.as_ref(), salt, &config)
+                    .expect("failed to hash password")
+                    .to_vec()
+            })
+            .build(),
+        )
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             // Quando uma segunda instância é detectada, foca a janela existente
             if let Some(window) = app.get_webview_window("main") {
@@ -96,7 +121,7 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| match event {
-            tauri::WindowEvent::CloseRequested{ api, .. } => {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
                 api.prevent_close();
                 window.hide().unwrap();
             }
@@ -107,7 +132,12 @@ pub fn run() {
             greet,
             settings::save_settings,
             settings::load_settings,
-            app_info::get_app_info
+            app_info::get_app_info,
+            pontomais::pontomais_authenticate,
+            pontomais::pontomais_restore_session,
+            pontomais::pontomais_current_workday,
+            pontomais::pontomais_session,
+            pontomais::pontomais_comp_time
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
