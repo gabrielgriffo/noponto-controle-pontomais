@@ -79,7 +79,8 @@
       [tooltipDelay]="500"
       [appTooltip]="isPontomaisLoggedIn ? '' : 'Nenhuma integração configurada'">
         Importar
-        <span class="icon-download"></span>
+        <span *ngIf="!isImporting" class="icon-download"></span>
+        <span *ngIf="isImporting" class="spinner"></span>
       </button>
       <!-- Botão de iniciar monitoramento -->
       <button class="btn-primary" (click)="onStartMonitoringClick()">

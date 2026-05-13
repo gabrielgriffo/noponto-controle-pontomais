@@ -24,6 +24,7 @@ export class Home implements OnInit, OnDestroy {
   showSettingsModal = false;
   isMonitoring = false;
   isPontomaisLoggedIn = false;
+  isImporting = false;
 
   @ViewChild('checkInInput') checkInInput!: ElementRef<HTMLInputElement>;
   @ViewChild('checkOutInput') checkOutInput!: ElementRef<HTMLInputElement>;
@@ -44,6 +45,7 @@ export class Home implements OnInit, OnDestroy {
   private capturedCheckOut: string = '';
   private capturedCheckIn2: string = '';
   private errorTimerSub?: Subscription;
+  private windowFocusHandler?: () => void;
 
   constructor(
     private timeCalc: TimeCalculationService,
@@ -74,6 +76,15 @@ export class Home implements OnInit, OnDestroy {
     } else {
       this.isPontomaisLoggedIn = false;
     }
+
+    // Remover foco de qualquer elemento quando a janela for focada
+    this.windowFocusHandler = () => {
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement && activeElement.blur) {
+        activeElement.blur();
+      }
+    };
+    window.addEventListener('focus', this.windowFocusHandler);
   }
 
   updateWorkTime(): void {
@@ -292,7 +303,11 @@ export class Home implements OnInit, OnDestroy {
   }
 
   async onImportClick(): Promise<void> {
+    if (this.isImporting) return;
+
     try {
+      this.isImporting = true;
+
       // 1. Verificar se está logado (verificar token no Stronghold)
       const hasToken = await this.strongholdService.hasToken();
 
@@ -343,6 +358,8 @@ export class Home implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erro ao importar:', error);
       this.toastService.error('Erro ao importar horários', 3000);
+    } finally {
+      this.isImporting = false;
     }
   }
 
@@ -359,6 +376,10 @@ export class Home implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
+    }
+
+    if (this.windowFocusHandler) {
+      window.removeEventListener('focus', this.windowFocusHandler);
     }
   }
 }
