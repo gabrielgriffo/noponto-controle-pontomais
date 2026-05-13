@@ -46,6 +46,7 @@ export class Home implements OnInit, OnDestroy {
   private capturedCheckIn2: string = '';
   private errorTimerSub?: Subscription;
   private windowFocusHandler?: () => void;
+  private mouseMoveHandler?: () => void;
 
   constructor(
     private timeCalc: TimeCalculationService,
@@ -77,14 +78,35 @@ export class Home implements OnInit, OnDestroy {
       this.isPontomaisLoggedIn = false;
     }
 
-    // Remover foco de qualquer elemento quando a janela for focada
-    this.windowFocusHandler = () => {
+    // Remover foco quando a janela se tornar visível ou mouse se mover
+    const removeFocus = () => {
       const activeElement = document.activeElement as HTMLElement;
-      if (activeElement && activeElement.blur) {
+      if (activeElement && activeElement.blur && activeElement.tagName !== 'INPUT') {
         activeElement.blur();
       }
     };
-    window.addEventListener('focus', this.windowFocusHandler);
+
+    // Evento de visibilidade da página
+    this.windowFocusHandler = () => {
+      if (!document.hidden) {
+        setTimeout(removeFocus, 100);
+      }
+    };
+    document.addEventListener('visibilitychange', this.windowFocusHandler);
+
+    // Remove foco quando mouse se move
+    let canRemoveFocus = true;
+    this.mouseMoveHandler = () => {
+      if (canRemoveFocus) {
+        removeFocus();
+        canRemoveFocus = false;
+        // Permite remover foco novamente após 500ms
+        setTimeout(() => {
+          canRemoveFocus = true;
+        }, 500);
+      }
+    };
+    document.addEventListener('mousemove', this.mouseMoveHandler);
   }
 
   updateWorkTime(): void {
@@ -379,7 +401,11 @@ export class Home implements OnInit, OnDestroy {
     }
 
     if (this.windowFocusHandler) {
-      window.removeEventListener('focus', this.windowFocusHandler);
+      document.removeEventListener('visibilitychange', this.windowFocusHandler);
+    }
+
+    if (this.mouseMoveHandler) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler);
     }
   }
 }
