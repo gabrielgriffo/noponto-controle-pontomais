@@ -21,6 +21,12 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .args(["--minimized", "--silent"])
+                .app_name("NoPonto")
+                .build()
+        )
         .manage(Mutex::new(PontoMaisState::new()))
         .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
@@ -59,10 +65,16 @@ pub fn run() {
             // Restaura a última posição
             window.restore_state(StateFlags::POSITION).ok();
 
-            // Garante que a janela sempre apareça ao iniciar, independente do último estado
-            window.unminimize().ok();
-            window.show().ok();
-            window.set_focus().ok();
+            // Verifica se foi iniciado com argumento --minimized (autostart)
+            let args: Vec<String> = std::env::args().collect();
+            let is_minimized_start = args.contains(&"--minimized".to_string());
+
+            // Se não foi iniciado minimizado, mostra a janela normalmente
+            if !is_minimized_start {
+                window.unminimize().ok();
+                window.show().ok();
+                window.set_focus().ok();
+            }
 
             // Configura propriedades da janela
             window.set_title("No Ponto")?;
@@ -80,7 +92,7 @@ pub fn run() {
             let menu = Menu::with_items(app, &[&open_i, &quit_i])?;
 
             let tray_icon = app.default_window_icon().unwrap().clone();
-            let _tray = TrayIconBuilder::new()
+            let _tray = TrayIconBuilder::with_id("com.gabrielgriffo.noponto.tray")
                 .icon(tray_icon)
                 .menu(&menu)
                 .show_menu_on_left_click(false)

@@ -77,6 +77,7 @@ export class TimeCalculationService {
     workedTime: TimeObject;
     remainingTime: TimeObject;
     endTime: TimeObject;
+    lunchHourAdded: boolean;
   } {
     const checkInMinutes = this.timeStringToMinutes(checkIn);
     const checkOutMinutes = this.timeStringToMinutes(checkOut);
@@ -89,39 +90,44 @@ export class TimeCalculationService {
     let totalWorkedMinutes = 0;
     let remainingMinutes = 0;
     let endTimeMinutes = 0;
+    let lunchHourAdded = false;
 
     // Cenário A: Apenas entrada preenchida
     if (checkInMinutes && !checkOutMinutes && !checkIn2Minutes) {
+      lunchHourAdded = true; // Marca que hora de almoço foi adicionada
+
       if (currentMinutes >= checkInMinutes) {
         firstPeriod = this.calculateTimeDifference(checkInMinutes, currentMinutes);
         totalWorkedMinutes = firstPeriod;
         remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
 
         if (totalWorkedMinutes >= targetJourneyMinutes) {
-          // Já completou 8h: fim fixo
-          endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+          // Já completou 8h: fim fixo + 1h de almoço
+          endTimeMinutes = checkInMinutes + targetJourneyMinutes + 60;
         } else {
-          endTimeMinutes = currentMinutes + remainingMinutes;
+          endTimeMinutes = currentMinutes + remainingMinutes + 60;
         }
       } else {
         firstPeriod = 0;
         totalWorkedMinutes = 0;
         remainingMinutes = targetJourneyMinutes;
-        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+        endTimeMinutes = checkInMinutes + targetJourneyMinutes + 60;
       }
     }
     // Cenário B: Entrada e saída preenchidos, sem retorno
     else if (checkInMinutes && checkOutMinutes && !checkIn2Minutes) {
+      lunchHourAdded = true; // Marca que hora de almoço foi adicionada
+
       firstPeriod = this.calculateTimeDifference(checkInMinutes, checkOutMinutes);
       totalWorkedMinutes = firstPeriod;
       remainingMinutes = Math.max(0, targetJourneyMinutes - totalWorkedMinutes);
 
       if (totalWorkedMinutes >= targetJourneyMinutes) {
-        // Já completou 8h no primeiro período: fim fixo
-        endTimeMinutes = checkInMinutes + targetJourneyMinutes;
+        // Já completou 8h no primeiro período: fim fixo + 1h de almoço
+        endTimeMinutes = checkInMinutes + targetJourneyMinutes + 60;
       } else {
-        // Primeiro período terminou, usa hora atual + tempo restante
-        endTimeMinutes = currentMinutes + remainingMinutes;
+        // Primeiro período terminou, usa hora atual + tempo restante + 1h de almoço
+        endTimeMinutes = currentMinutes + remainingMinutes + 60;
       }
     }
     // Cenário C: Todos os 3 horários preenchidos (entrada, saída e retorno)
@@ -161,7 +167,8 @@ export class TimeCalculationService {
       secondPeriod: this.minutesToTimeObject(secondPeriod),
       workedTime: this.minutesToTimeObject(totalWorkedMinutes),
       remainingTime: this.minutesToTimeObject(remainingMinutes),
-      endTime: this.minutesToTimeObject(endTimeMinutes % (24 * 60))
+      endTime: this.minutesToTimeObject(endTimeMinutes % (24 * 60)),
+      lunchHourAdded: lunchHourAdded
     };
   }
 }

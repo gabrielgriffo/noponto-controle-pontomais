@@ -8,6 +8,7 @@ export interface GeneralSettings {
   autoImportInterval: number;
   alarmEnabled: boolean;
   notificationEnabled: boolean;
+  autostartEnabled: boolean;
 }
 
 @Component({

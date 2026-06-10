@@ -8,12 +8,14 @@ import { invoke } from '@tauri-apps/api/core';
 import { ToastService } from '../../services/toast.service';
 import { PontoMaisService } from '../../services/pontomais.service';
 import { StrongholdService } from '../../services/stronghold.service';
+import { AutostartService } from '../../services/autostart.service';
 
 interface Settings {
   autoImportEnabled: boolean;
   autoImportInterval: number;
   alarmEnabled: boolean;
   notificationEnabled: boolean;
+  autostartEnabled: boolean;
   pontomaisLogin: string;
   isPontomaisLoggedIn: boolean;
 }
@@ -55,6 +57,7 @@ export class SettingsModal implements OnInit, OnChanges {
     autoImportInterval: 10,
     alarmEnabled: false,
     notificationEnabled: false,
+    autostartEnabled: false,
     pontomaisLogin: '',
     isPontomaisLoggedIn: false
   };
@@ -77,7 +80,8 @@ export class SettingsModal implements OnInit, OnChanges {
   constructor(
     private toastService: ToastService,
     private pontoMaisService: PontoMaisService,
-    private strongholdService: StrongholdService
+    private strongholdService: StrongholdService,
+    private autostartService: AutostartService
   ) {}
 
   async ngOnInit() {
@@ -102,6 +106,15 @@ export class SettingsModal implements OnInit, OnChanges {
     try {
       const loadedSettings = await invoke<Settings>('load_settings');
       this.settings = loadedSettings;
+
+      // Verificar o status REAL do autostart no sistema
+      const actualAutostartStatus = await this.autostartService.isEnabled();
+
+      // Se o status real for diferente do salvo, sincronizar
+      if (actualAutostartStatus !== this.settings.autostartEnabled) {
+        this.settings.autostartEnabled = actualAutostartStatus;
+        await this.saveSettings();
+      }
 
       // SEMPRE verificar o Stronghold como fonte da verdade
       const token = await this.strongholdService.getToken();
@@ -163,6 +176,17 @@ export class SettingsModal implements OnInit, OnChanges {
 
   async saveSettings() {
     try {
+      // Sincronizar autostart com o sistema operacional
+      const currentAutostartStatus = await this.autostartService.isEnabled();
+
+      if (this.settings.autostartEnabled && !currentAutostartStatus) {
+        // Usuário quer habilitar e não está habilitado
+        await this.autostartService.enable();
+      } else if (!this.settings.autostartEnabled && currentAutostartStatus) {
+        // Usuário quer desabilitar e está habilitado
+        await this.autostartService.disable();
+      }
+
       await invoke('save_settings', { settings: this.settings });
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);

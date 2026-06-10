@@ -1,4 +1,15 @@
 <div class="tab-content">
+  <!-- Iniciar com o Sistema -->
+  <div class="setting-item">
+    <div class="setting-header">
+      <span class="setting-label">Iniciar com o Sistema</span>
+      <app-toggle-switch
+        [checked]="settings.autostartEnabled"
+        (checkedChange)="settings.autostartEnabled = $event; onToggleChange()"
+      ></app-toggle-switch>
+    </div>
+  </div>
+
   <!-- Importação Automática -->
   <div class="setting-item">
     <div class="setting-header">

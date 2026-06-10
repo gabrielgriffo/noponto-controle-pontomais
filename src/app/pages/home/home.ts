@@ -39,6 +39,7 @@ export class Home implements OnInit, OnDestroy {
   firstPeriodTime: TimeObject = { hours: 0, minutes: 0 };
   secondPeriodTime: TimeObject = { hours: 0, minutes: 0 };
   endTime: TimeObject = { hours: 0, minutes: 0 };
+  hasLunchHourAdded: boolean = false;
 
   private updateInterval: any;
   private capturedCheckIn: string = '';
@@ -121,6 +122,7 @@ export class Home implements OnInit, OnDestroy {
     this.workedTime = result.workedTime;
     this.remainingTime = result.remainingTime;
     this.endTime = result.endTime;
+    this.hasLunchHourAdded = result.lunchHourAdded;
   }
 
   get progressPercentageValue(): number {

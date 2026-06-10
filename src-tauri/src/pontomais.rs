@@ -73,7 +73,10 @@ pub async fn pontomais_authenticate(
     let url = format!("{}/api/auth/sign_in", BASE_URL);
 
     let mut headers = header::HeaderMap::new();
-    headers.insert("accept", "application/json, text/plain, */*".parse().unwrap());
+    headers.insert(
+        "accept",
+        "application/json, text/plain, */*".parse().unwrap(),
+    );
     headers.insert("api-version", "2".parse().unwrap());
     headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
     headers.insert("origin", APP_ORIGIN.parse().unwrap());
@@ -95,19 +98,23 @@ pub async fn pontomais_authenticate(
     if response.status().as_u16() == 201 {
         // Extrair tokens dos HEADERS
         let headers = response.headers();
-        let token = headers.get("access-token")
+        let token = headers
+            .get("access-token")
             .and_then(|v| v.to_str().ok())
             .unwrap_or("")
             .to_string();
-        let client_id = headers.get("client")
+        let client_id = headers
+            .get("client")
             .and_then(|v| v.to_str().ok())
             .unwrap_or("")
             .to_string();
-        let expiry = headers.get("expiry")
+        let expiry = headers
+            .get("expiry")
             .and_then(|v| v.to_str().ok())
             .unwrap_or("")
             .to_string();
-        let uid = headers.get("uid")
+        let uid = headers
+            .get("uid")
             .and_then(|v| v.to_str().ok())
             .unwrap_or("")
             .to_string();
@@ -133,12 +140,20 @@ pub async fn pontomais_authenticate(
 fn build_headers(state: &PontoMaisState) -> header::HeaderMap {
     let mut headers = header::HeaderMap::new();
 
-    headers.insert("accept", "application/json, text/plain, */*".parse().unwrap());
+    headers.insert(
+        "accept",
+        "application/json, text/plain, */*".parse().unwrap(),
+    );
     headers.insert("api-version", "2".parse().unwrap());
     headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
     headers.insert("origin", APP_ORIGIN.parse().unwrap());
     headers.insert(header::REFERER, format!("{}/", APP_ORIGIN).parse().unwrap());
-    headers.insert(header::USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36".parse().unwrap());
+    headers.insert(
+        header::USER_AGENT,
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            .parse()
+            .unwrap(),
+    );
 
     if let Some(username) = &state.username {
         headers.insert("uid", username.parse().unwrap());

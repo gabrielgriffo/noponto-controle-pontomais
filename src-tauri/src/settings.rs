@@ -10,6 +10,7 @@ pub struct Settings {
     pub auto_import_interval: u32,
     pub alarm_enabled: bool,
     pub notification_enabled: bool,
+    pub autostart_enabled: bool,
     pub pontomais_login: String,
     pub is_pontomais_logged_in: bool,
 }
@@ -21,6 +22,7 @@ impl Default for Settings {
             auto_import_interval: 10,
             alarm_enabled: false,
             notification_enabled: false,
+            autostart_enabled: false,
             pontomais_login: String::new(),
             is_pontomais_logged_in: false,
         }
